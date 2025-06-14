@@ -260,7 +260,6 @@ Please analyze this report and extract key slice information according to the in
         )
         return ai_report
 
-
 def get_diagnostic_tests(patient_id):
     patient_data = get_patient_data(patient_id)
     system_prompt = """
