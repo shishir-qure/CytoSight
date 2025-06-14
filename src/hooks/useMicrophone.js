@@ -1,13 +1,21 @@
 import { useState, useRef } from "react";
 import { useMicVAD, utils } from "@ricky0123/vad-react";
+import getPrompts from "../utils/getPrompts";
+import { generateObject } from "ai";
+import { z } from "zod";
+import { mergeVitals, formatVitals } from "../utils";
+import { getOpenAIInstance, openAIModelName } from "../utils/openAISetup";
 
-const useMicrophone = ({ activeTab }) => {
+const useMicrophone = ({ activeTab, existingVitals }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
+  const [updatedVitals, setUpdatedVitals] = useState(null);
   const audioStreamRef = useRef(null);
   const recorderRef = useRef(null);
   const isReadyToPost = useRef(false);
+
+  const openai = getOpenAIInstance();
 
   const vad = useMicVAD({
     userSpeakingThreshold: 0.5,
@@ -37,8 +45,48 @@ const useMicrophone = ({ activeTab }) => {
     getSummary(data.text);
   }
 
-  function getSummary(text) {
-    console.log("here123", { text });
+  async function getSummary(currentAssistantText) {
+    const prompt = getPrompts()[activeTab];
+
+    let messages = [
+      {
+        role: "system",
+        content: prompt,
+      },
+    ];
+
+    const formattedExistingVitals = formatVitals(existingVitals); // Converts to { focus, value, lastUpdated }
+
+    if (currentAssistantText) {
+      messages.push({
+        role: "user",
+        content: `conversation: ${currentAssistantText}\ncurrent_vitals: ${JSON.stringify(
+          formattedExistingVitals,
+          null,
+          2
+        )}`,
+      });
+    }
+
+    const { object } = await generateObject({
+      model: openai(openAIModelName),
+      schema: z.object({
+        vitals: z.array(
+          z.object({
+            focus: z.string(),
+            value: z.string(),
+            lastUpdated: z.string(),
+          })
+        ),
+      }),
+      messages: messages,
+    });
+
+    const mergedVitals = mergeVitals(existingVitals, object.vitals);
+    setUpdatedVitals(mergedVitals);
+    console.log("Final Merged Vitals Format", mergedVitals);
+
+    // If needed, return or use `mergedVitals` for display or storage
   }
 
   function recordAudioChunkToBase64(stream) {
@@ -160,7 +208,7 @@ const useMicrophone = ({ activeTab }) => {
 
         setIsRecording(false);
         if (isReadyToPost.current) {
-          postPatientDetails();
+          // postPatientDetails();
         }
       } catch (error) {
         console.error("Failed to stop recording:", error);
@@ -177,6 +225,7 @@ const useMicrophone = ({ activeTab }) => {
     audioUrl,
     startRecording,
     toggleRecording,
+    updatedVitals,
   };
 };
 

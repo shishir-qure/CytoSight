@@ -4,33 +4,25 @@ import classNames from "classnames";
 import { useState } from "react";
 import { BsStars } from "react-icons/bs";
 
-export default function RiskTab() {
-  const [riskLevel, setRiskLevel] = useState("low");
-
+export default function RiskTab({ riskAssessment }) {
   const tags = [
     {
       id: 1,
       name: "Low",
-      value: "low",
+      value: "Low",
       color: "bg-green-500",
     },
     {
       id: 2,
-      name: "Medium",
-      value: "medium",
+      name: "Moderate",
+      value: "Moderate",
       color: "bg-yellow-500",
     },
     {
       id: 3,
       name: "High",
-      value: "high",
+      value: "High",
       color: "bg-red-500",
-    },
-    {
-      id: 4,
-      name: "Confirmed",
-      value: "confirmed",
-      color: "bg-blue-500",
     },
   ];
   return (
@@ -40,7 +32,7 @@ export default function RiskTab() {
         {/* ling cancer risk */}
         <div className="flex flex-col gap-8">
           <div className="space-y-3">
-            <p className="font-semibold text-lg">Lung Cancer Risk</p>
+            <h2 className="text-2xl font-bold text-white mb-8">Lung Cancer Risk</h2>
             <div className="flex items-center gap-2">
               {tags.map((tag) => (
                 <div
@@ -48,8 +40,8 @@ export default function RiskTab() {
                   className={classNames(
                     `p-1 rounded-full w-28 text-center cursor-pointer`,
                     {
-                      [`${tag.color}`]: tag.value === riskLevel,
-                      "border border-gray-600": tag.value !== riskLevel,
+                      [`${tag.color}`]: tag.value === riskAssessment?.risk_level,
+                      "border border-gray-600": tag.value !== riskAssessment?.risk_level,
                     }
                   )}
                 >
@@ -64,24 +56,18 @@ export default function RiskTab() {
               <BsStars className="text-yellow-500" />
               AI Key Findings
             </p>
-            <p className="text-base text-gray-200">
-              The patient has a high risk of developing lung cancer. The patient has a
-              high risk of developing lung cancer. The patient has a high risk of
-              developing lung cancer. The patient has a high risk of developing lung
-              cancer. The patient has a high risk of developing lung cancer.
-              <br />
-              <br />
-              The patient has a high risk of developing lung cancer. The patient has a
-              high risk of developing lung cancer. The patient has a high risk of
-              developing lung cancer. The patient has a high risk of developing lung
-              cancer. The patient has a high risk of developing lung cancer.
-              <br />
-              <br />
-              The patient has a high risk of developing lung cancer. The patient has a
-              high risk of developing lung cancer. The patient has a high risk of
-              developing lung cancer. The patient has a high risk of developing lung
-              cancer. The patient has a high risk of developing lung cancer.
-            </p>
+            <div className="flex flex-col space-y-4">
+              <ul className="text-base list-disc list-inside text-gray-200">
+                {riskAssessment?.drivers?.map((driver) => (
+                  <li key={driver.id}>{driver}</li>
+                ))}
+              </ul>
+              <ul className="text-base list-disc list-inside text-gray-200">
+                {riskAssessment?.lack_of_risk_evidence?.map((evidence) => (
+                  <li key={evidence.id}>{evidence}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>

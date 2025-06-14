@@ -1,103 +1,44 @@
-export default function VitalsTab() {
-  const vitals = [
-    {
-      name: "Blood Pressure",
-      value: "135/85 mmHg",
-      lastUpdated: "2 hours ago",
-      status: "normal",
-    },
-    {
-      name: "Heart Rate",
-      value: "72 bpm",
-      lastUpdated: "2 hours ago",
-      status: "normal",
-    },
-    {
-      name: "Temperature",
-      value: "99.2°F",
-      lastUpdated: "1 hour ago",
-      status: "normal",
-    },
-    {
-      name: "Oxygen Saturation",
-      value: "98%",
-      lastUpdated: "1 hour ago",
-      status: "normal",
-    },
-    {
-      name: "Respiratory Rate",
-      value: "16/min",
-      lastUpdated: "1 hour ago",
-      status: "normal",
-    },
-    {
-      name: "Weight",
-      value: "185 lbs",
-      lastUpdated: "6 hours ago",
-      status: "normal",
-    },
-    {
-      name: "Height",
-      value: "5'10\"",
-      lastUpdated: "1 week ago",
-      status: "normal",
-    },
-    {
-      name: "BMI",
-      value: "26.5",
-      lastUpdated: "6 hours ago",
-      status: "normal",
-    },
-    {
-      name: "Pain Scale",
-      value: "3/10",
-      lastUpdated: "30 minutes ago",
-      status: "elevated",
-    },
-    {
-      name: "Blood Glucose",
-      value: "145 mg/dL",
-      lastUpdated: "4 hours ago",
-      status: "critical",
-    },
-  ];
-
+import { format } from "date-fns";
+export default function VitalsTab({ vitals }) {
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-6">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-white">Vital Signs</h2>
           <div className="flex space-x-3">
-            <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+            {/* <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
               <span>📋</span>
               <span>Send to EMR</span>
-            </button>
+            </button> */}
           </div>
         </div>
 
         <div className="space-y-4">
-          {vitals.map((vital, index) => (
+          {vitals?.map((vital, index) => (
             <div key={index} className="bg-gray-800 rounded-lg p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 flex items-center">
-                    {vital.name}
-                    <span className="ml-2 text-2xl">{vital.trend}</span>
+                  <h3 className="text-lg font-semibold uppercase text-white mb-1 flex items-center">
+                    {vital.focus?.split(":")[0]}
                   </h3>
-                  <p className="text-gray-400 text-sm">
-                    Last updated: {vital.lastUpdated}
-                  </p>
+                  {/* <p className="text-gray-400 text-sm">
+                    Last updated:{" "}
+                    {format(
+                      new Date(vitalsData?.scheduled_at?.split("T")[0]),
+                      "MMM d, yyyy"
+                    )}
+                  </p> */}
                 </div>
                 <div
                   className={`text-2xl font-bold ${
-                    vital.status === "elevated"
+                    vital?.status === "elevated"
                       ? "text-yellow-400"
                       : vital.status === "critical"
                       ? "text-red-400"
                       : "text-gray-100"
                   }`}
                 >
-                  {vital.value}
+                  {vital.focus?.split(":")[1]}
                 </div>
               </div>
 
