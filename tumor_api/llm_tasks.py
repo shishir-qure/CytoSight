@@ -114,12 +114,12 @@ def get_patient_summary(patient_id):
 def create_ai_report(patient, visit, image_series):
     """
     Creates an AIReport for the given ImageSeries using LLM analysis.
-    
+
     Args:
         patient: Patient instance
-        visit: Visit instance  
+        visit: Visit instance
         image_series: ImageSeries instance
-        
+
     Returns:
         AIReport instance
     """
@@ -132,10 +132,10 @@ def create_ai_report(patient, visit, image_series):
         reports = visit.visit_reports.all()
         if reports.exists():
             diagnostic_text = "\n".join([report.free_text_report for report in reports])
-    
+
     # Count the number of DICOM files in the series
     dicom_count = image_series.dicom_files.count()
-    
+
     system_prompt = """
 You are a medical assistant reviewing radiology reports.
 Your task is to find key CT findings that are associated with specific image slices. Focus on identifying the slice numbers mentioned in the report.
@@ -188,6 +188,7 @@ Please analyze this report and extract key slice information according to the in
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt}
     ]
+<<<<<<< HEAD
     
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     print(response)
@@ -228,6 +229,17 @@ Please analyze this report and extract key slice information according to the in
                         # Populate the file_links for this key slice
                         key_slice['file_links'] = relevant_files
             
+=======
+
+
+    response = llm_service.get_response("gpt-4", messages)
+
+    if response:
+        try:
+            # Parse the JSON response
+            ai_analysis = json.loads(response)
+
+>>>>>>> origin/main
             # Create the AIReport
             ai_report = AIReport.objects.create(
                 image_series=image_series,
@@ -236,9 +248,9 @@ Please analyze this report and extract key slice information according to the in
                 summary=ai_analysis.get('summary', ''),
                 keyslices_dict=ai_analysis.get('keyslices_dict', [])
             )
-            
+
             return ai_report
-            
+
         except json.JSONDecodeError:
             # If JSON parsing fails, create a basic report
             ai_report = AIReport.objects.create(
@@ -260,7 +272,10 @@ Please analyze this report and extract key slice information according to the in
         )
         return ai_report
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 def get_diagnostic_tests(patient_id):
     patient_data = get_patient_data(patient_id)
     system_prompt = """
@@ -355,7 +370,11 @@ def get_visit_encounters(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
+<<<<<<< HEAD
         response = json.loads(response) if response and isinstance(response, str) else None
+=======
+        response = json.loads(response) if response else None
+>>>>>>> origin/main
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None
@@ -424,7 +443,11 @@ def get_structured_clinical_notes(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
+<<<<<<< HEAD
         response = json.loads(response) if response and isinstance(response, str) else None
+=======
+        response = json.loads(response) if response else None
+>>>>>>> origin/main
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None
