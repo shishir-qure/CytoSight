@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport, Message
 from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer, AIReportSerializer
 from django.http import FileResponse, Http404, HttpResponse
+from .services import get_patient_data
 import zipfile
 import io
 from tumor_api.llm_tasks import create_ai_report
