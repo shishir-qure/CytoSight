@@ -13,7 +13,7 @@ class Patient(models.Model):
     dob = models.DateField(null=False, db_index=True)
     contact = models.CharField(max_length=100, null=True, db_index=True)
     address = models.CharField(max_length=200, null=True, db_index=True)
-    gender = models.CharField(choices=Gender.choices, db_index=True)
+    gender = models.CharField(max_length=10, null=True, db_index=True)
     workspace = models.ForeignKey(Workspace, related_name="workspace", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
 
@@ -30,7 +30,7 @@ class Visit(models.Model):
     scheduled_at = models.DateTimeField(blank=True, null=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
     actor_assigned = models.ForeignKey(Actor, related_name="actor_visits", on_delete=models.CASCADE)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['patient', 'scheduled_at']),
@@ -43,7 +43,7 @@ class Observation(models.Model):
     patient = models.ForeignKey(Patient, related_name="patient_observations", on_delete=models.CASCADE)
     visit = models.ForeignKey(Visit, related_name="visit_observations", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['patient', 'focus']),
@@ -56,7 +56,7 @@ class DiagnosticReport(models.Model):
     patient = models.ForeignKey(Patient, related_name="patient_reports", on_delete=models.CASCADE)
     visit = models.ForeignKey(Visit, related_name="visit_reports", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['patient', 'created_at']),
@@ -68,7 +68,7 @@ class MedicationStatement(models.Model):
     medication_text = models.CharField(max_length=200, null=False, db_index=True)
     dosage = models.CharField(max_length=200, null=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['patient', 'medication_text']),
@@ -80,7 +80,7 @@ class Immunization(models.Model):
     visit = models.ForeignKey(Visit, related_name="visit_immunizations", on_delete=models.CASCADE)
     vaccine = models.CharField(max_length=200, null=False, db_index=True) # make this into an enum maybe
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['patient', 'vaccine']),
@@ -92,11 +92,19 @@ class CarePlan(models.Model):
     patient = models.ForeignKey(Patient, related_name="patient_care_plans", on_delete=models.CASCADE)
     care_plan_provided = models.CharField(max_length=300, null=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=['patient', 'created_at']),
         ]
 
 class Image(models.Model):
-    pass
+    patient = models.ForeignKey(Patient, related_name="patient_images", on_delete=models.CASCADE)
+    image_id = models.CharField(max_length=200, null=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['patient', 'image_id']),
+            models.Index(fields=['patient', 'created_at']),
+        ]
