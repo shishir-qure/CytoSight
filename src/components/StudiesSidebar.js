@@ -1,6 +1,6 @@
 
 import React from "react";
-import { usePatientReports } from "../components/ReportSidebar/services/usePatientReports";
+import usePatientReports from "./ReportSidebar/services/usePatientReports";
 
 import ReportItem from "./ReportSidebar/ReportItem";
 
@@ -24,7 +24,7 @@ export default function StudiesSidebar({ patient_uid }) {
 
       <div className="p-4 space-y-6">
 
-        <div key={study.id} className="bg-gray-700 rounded-lg p-4">
+        <div key={study?.id} className="bg-gray-700 rounded-lg p-4">
 
           <div className="flex items-start justify-between mb-3">
             {study?.scan_type && <div className="flex items-start space-x-3 justify-center">
