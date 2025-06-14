@@ -17,6 +17,7 @@ class Patient(models.Model):
     address = models.CharField(max_length=200, null=True, db_index=True)
     gender = models.CharField(max_length=10, null=True, db_index=True)
     workspace = models.ForeignKey(Workspace, related_name="workspace", on_delete=models.CASCADE)
+    added_to_tumor_board = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
 
     class Meta:
@@ -25,6 +26,16 @@ class Patient(models.Model):
             models.Index(fields=['workspace', 'name']),
             models.Index(fields=['workspace', 'dob']),
             models.Index(fields=['workspace', 'gender']),
+        ]
+
+class Message(models.Model):
+    patient = models.ForeignKey(Patient, related_name="patient_messages", on_delete=models.CASCADE)
+    message = models.TextField(null=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['patient', 'created_at']),
         ]
 
 class Visit(models.Model):
