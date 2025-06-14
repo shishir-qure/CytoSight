@@ -60,6 +60,12 @@ def get_patient_data(patient_id, include_llm_outputs=False):
     except LLMOutputs.DoesNotExist:
         pass
 
+    try:
+        structured_clinical_notes = LLMOutputs.objects.get(patient=patient, task_name="structured_clinical_notes", is_deleted=False)
+        patient_data['clinical_notes'] = structured_clinical_notes.llm_output
+    except LLMOutputs.DoesNotExist:
+        pass
+
     if include_llm_outputs:
         try:
             risk_assessment = LLMOutputs.objects.get(patient=patient, task_name="risk_assessment", is_deleted=False)
