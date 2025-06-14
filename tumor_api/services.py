@@ -1,4 +1,4 @@
-from tumor_api.models import Patient, Observation, DiagnosticReport, Immunization, MedicationStatement, CarePlan
+from tumor_api.models import Patient, Observation, DiagnosticReport, Immunization, MedicationStatement, CarePlan, LLMOutputs
 from tumor_api.serializers import PatientSerializer
 
 def get_patient_data(patient_id, include_llm_outputs=False):
@@ -47,4 +47,37 @@ def get_patient_data(patient_id, include_llm_outputs=False):
         } for care_plan in care_plans],
         'visits': visit_data
     }
+
+    try:
+        diagnostic_tests = LLMOutputs.objects.get(patient=patient, task_name="diagnostic_tests", is_deleted=False)
+        patient_data['diagnostic_tests'] = diagnostic_tests.llm_output
+    except LLMOutputs.DoesNotExist:
+        pass
+
+    try:
+        visit_encounters = LLMOutputs.objects.get(patient=patient, task_name="visit_encounters", is_deleted=False)
+        patient_data['visit_encounters'] = visit_encounters.llm_output
+    except LLMOutputs.DoesNotExist:
+        pass
+
+    try:
+        structured_clinical_notes = LLMOutputs.objects.get(patient=patient, task_name="structured_clinical_notes", is_deleted=False)
+        patient_data['clinical_notes'] = structured_clinical_notes.llm_output
+    except LLMOutputs.DoesNotExist:
+        pass
+
+    if include_llm_outputs:
+        try:
+            risk_assessment = LLMOutputs.objects.get(patient=patient, task_name="risk_assessment", is_deleted=False)
+            patient_data['risk_assessment'] = risk_assessment.llm_output
+        except LLMOutputs.DoesNotExist:
+            pass
+
+        try:
+            patient_summary = LLMOutputs.objects.get(patient=patient, task_name="patient_summary", is_deleted=False)
+            patient_data['patient_summary'] = patient_summary.llm_output
+        except LLMOutputs.DoesNotExist:
+            pass
+
+
     return patient_data

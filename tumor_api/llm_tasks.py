@@ -14,22 +14,26 @@ def get_risk_assessment(patient_id):
         If a section is missing, treat it as "no contributory data".
         Weigh factors broadly in line with Brock / Mayo risk calculators and
         Fleischner 2023 nodule follow-up guidance, but explain your reasoning in plain English.
-        Return your answer in the exact JSON schema shown below. No extra keys, no prose outside JSON.
+
+        IMPORTANT: You must return ONLY a valid JSON object with no additional text before or after.
+        The response must be parseable by json.loads().
+
         Valid tiers:
         • Low: estimated probability less than 5% in 2 years
         • Moderate: 5 to 15%
         • High: greater than 15%
-        ### OUTPUT-SCHEMA
+
+        Return your answer in this exact JSON format with no additional text:
         {
-            "risk_level": "",
-            "probability_range": "",
-            "drivers": [],
-            "lack_of_risk_evidence": [],
-            "guideline_reference": ""
+            "risk_level": "Low|Moderate|High",
+            "probability_range": "0-5%|5-15%|>15%",
+            "drivers": ["list", "of", "key", "risk", "factors"],
+            "lack_of_risk_evidence": ["list", "of", "missing", "or", "negative", "factors"],
+            "guideline_reference": "Brock/Mayo/Fleischner"
         }
     """
 
-    user_prompt = """
+    user_prompt = f"""
         Here is the patient's data:
         {patient_data}
     """
@@ -40,6 +44,7 @@ def get_risk_assessment(patient_id):
         {"role": "user", "content": user_prompt}
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
+    response = json.loads(response) if response else None
 
     # Mark any existing risk assessments as deleted
     LLMOutputs.objects.filter(
@@ -77,7 +82,7 @@ def get_patient_summary(patient_id):
         Use plain language that would be understandable to both healthcare providers and patients.
     """
 
-    user_prompt = """
+    user_prompt = f"""
         Here is the patient's data:
         {patient_data}
     """
