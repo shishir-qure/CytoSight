@@ -18,3 +18,16 @@ class LLMService:
             print(e)
             return None
 
+    def get_tool_response(self, model, messages, tools):
+        try:
+            chat_complete = self.portkey.chat.completions.create(
+                model=model,
+                messages=messages,
+                tools=tools,
+                tool_choice="auto"
+            )
+            return chat_complete.choices[0].message.content
+        except Exception as e:
+            print(e)
+            raise e
+
