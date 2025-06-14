@@ -4,83 +4,63 @@ export default function VitalsTab() {
       name: "Blood Pressure",
       value: "135/85 mmHg",
       lastUpdated: "2 hours ago",
-      status: "elevated",
-      trend: "↑",
-      history: ["130/80", "128/82", "135/85"],
+      status: "normal",
     },
     {
       name: "Heart Rate",
       value: "72 bpm",
       lastUpdated: "2 hours ago",
       status: "normal",
-      trend: "→",
-      history: ["68", "70", "72"],
     },
     {
       name: "Temperature",
       value: "99.2°F",
       lastUpdated: "1 hour ago",
-      status: "elevated",
-      trend: "↑",
-      history: ["98.6", "99.0", "99.2"],
+      status: "normal",
     },
     {
       name: "Oxygen Saturation",
       value: "98%",
       lastUpdated: "1 hour ago",
       status: "normal",
-      trend: "→",
-      history: ["97%", "98%", "98%"],
     },
     {
       name: "Respiratory Rate",
       value: "16/min",
       lastUpdated: "1 hour ago",
       status: "normal",
-      trend: "→",
-      history: ["14", "15", "16"],
     },
     {
       name: "Weight",
       value: "185 lbs",
       lastUpdated: "6 hours ago",
       status: "normal",
-      trend: "↓",
-      history: ["188", "186", "185"],
     },
     {
       name: "Height",
       value: "5'10\"",
       lastUpdated: "1 week ago",
       status: "normal",
-      trend: "→",
-      history: ["5'10\"", "5'10\"", "5'10\""],
     },
     {
       name: "BMI",
       value: "26.5",
       lastUpdated: "6 hours ago",
-      status: "elevated",
-      trend: "↓",
-      history: ["27.0", "26.8", "26.5"],
+      status: "normal",
     },
     {
       name: "Pain Scale",
       value: "3/10",
       lastUpdated: "30 minutes ago",
-      status: "normal",
-      trend: "↓",
-      history: ["6/10", "4/10", "3/10"],
+      status: "elevated",
     },
     {
       name: "Blood Glucose",
       value: "145 mg/dL",
       lastUpdated: "4 hours ago",
-      status: "elevated",
-      trend: "↑",
-      history: ["120", "135", "145"],
+      status: "critical",
     },
-  ]
+  ];
 
   return (
     <div className="h-full overflow-y-auto">
@@ -88,11 +68,7 @@ export default function VitalsTab() {
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-white">Vital Signs</h2>
           <div className="flex space-x-3">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-              <span>🎤</span>
-              <span>Transcribe Vitals</span>
-            </button>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+            <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
               <span>📋</span>
               <span>Send to EMR</span>
             </button>
@@ -108,15 +84,17 @@ export default function VitalsTab() {
                     {vital.name}
                     <span className="ml-2 text-2xl">{vital.trend}</span>
                   </h3>
-                  <p className="text-gray-400 text-sm">Last updated: {vital.lastUpdated}</p>
+                  <p className="text-gray-400 text-sm">
+                    Last updated: {vital.lastUpdated}
+                  </p>
                 </div>
                 <div
                   className={`text-2xl font-bold ${
                     vital.status === "elevated"
                       ? "text-yellow-400"
                       : vital.status === "critical"
-                        ? "text-red-400"
-                        : "text-green-400"
+                      ? "text-red-400"
+                      : "text-gray-100"
                   }`}
                 >
                   {vital.value}
@@ -124,22 +102,27 @@ export default function VitalsTab() {
               </div>
 
               {/* Trend History */}
-              <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Recent History:</h4>
+              {/* <div className="mt-4">
+                <h4 className="text-sm font-medium text-gray-300 mb-2">
+                  Recent History:
+                </h4>
                 <div className="flex space-x-2">
                   {vital.history.map((value, historyIndex) => (
-                    <span key={historyIndex} className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300">
+                    <span
+                      key={historyIndex}
+                      className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300"
+                    >
                       {value}
                     </span>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
 
         {/* Additional Monitoring Section */}
-        <div className="mt-8">
+        {/* <div className="mt-8">
           <h3 className="text-xl font-semibold text-white mb-6">Continuous Monitoring</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gray-800 rounded-lg p-4">
@@ -153,8 +136,8 @@ export default function VitalsTab() {
               <p className="text-green-400 text-sm">Stable oxygen levels</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
-  )
+  );
 }

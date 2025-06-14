@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/router"
-import { useState } from "react"
-import PatientSidebar from "../../components/PatientSidebar"
-import PatientContent from "../../components/PatientContent"
-import StudiesSidebar from "../../components/StudiesSidebar"
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import PatientSidebar from "../../components/PatientSidebar";
+import PatientContent from "../../components/PatientContent";
+import StudiesSidebar from "../../components/StudiesSidebar";
 
 // Sample patient data - Add more patients
 const patientsData = {
@@ -148,180 +148,188 @@ const patientsData = {
     clinicalStatus: "Endocrine Disorders Managed",
     orderingDepartment: "Endocrinology",
   },
-}
+};
 
 const allPatients = [
   {
-    id: "anon-116y-m",
-    name: "anon",
-    age: "116Y M",
-    code: "P0D0B89B3C7D6517",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:39 AM",
-    hasAlert: true,
+    id: 1,
+    patient_id: "sssss",
+    name: "shhh",
+    dob: "2000-11-12",
+    contact: null,
+    address: null,
+    gender: "male",
+    created_at: "2025-06-14T08:58:32.504596Z",
+    workspace: 1,
   },
   {
-    id: "anon-52y-m",
-    name: "anon",
-    age: "52Y M",
-    code: "pAD6F3E11222C17",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:35 AM",
+    id: 2,
+    patient_id: "sarah-mitchell",
+    name: "Sarah Mitchell",
+    dob: "1985-03-15",
+    contact: "617-555-0123",
+    address: "142 Maple Street, Boston, MA 02115",
+    gender: "female",
+    created_at: "2025-06-14T09:02:58.979327Z",
+    workspace: 1,
   },
   {
-    id: "anon-67y-f",
-    name: "anon",
-    age: "67Y F",
-    code: "CAR789123456789",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:30 AM",
-    hasAlert: true,
+    id: 3,
+    patient_id: "marcus-johnson",
+    name: "Marcus Johnson",
+    dob: "1978-11-22",
+    contact: "312-555-0456",
+    address: "789 Oak Avenue, Chicago, IL 60614",
+    gender: "male",
+    created_at: "2025-06-14T09:02:59.009773Z",
+    workspace: 1,
   },
   {
-    id: "anon-34y-f",
-    name: "anon",
-    age: "34Y F",
-    code: "EMR456789012345",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:25 AM",
-    hasAlert: true,
+    id: 4,
+    patient_id: "emily-chen",
+    name: "Emily Chen",
+    dob: "1992-07-03",
+    contact: "415-555-0789",
+    address: "567 Pine Street, San Francisco, CA 94102",
+    gender: "female",
+    created_at: "2025-06-14T09:02:59.022537Z",
+    workspace: 1,
   },
   {
-    id: "anon-78y-m",
-    name: "anon",
-    age: "78Y M",
-    code: "ONC987654321098",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:20 AM",
-    hasAlert: true,
+    id: 5,
+    patient_id: "robert-thompson",
+    name: "Robert Thompson",
+    dob: "1965-12-08",
+    contact: "713-555-0234",
+    address: "234 Cedar Lane, Houston, TX 77001",
+    gender: "male",
+    created_at: "2025-06-14T09:02:59.035657Z",
+    workspace: 1,
   },
   {
-    id: "anon-45y-m",
-    name: "anon",
-    age: "45Y M",
-    code: "NEU123987456321",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:15 AM",
+    id: 6,
+    patient_id: "maria-rodriguez",
+    name: "Maria Rodriguez",
+    dob: "1988-05-17",
+    contact: "305-555-0567",
+    address: "890 Elm Drive, Miami, FL 33101",
+    gender: "female",
+    created_at: "2025-06-14T09:02:59.053269Z",
+    workspace: 1,
   },
   {
-    id: "anon-29y-f",
-    name: "anon",
-    age: "29Y F",
-    code: "ORT654321987654",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:10 AM",
+    id: 7,
+    patient_id: "david-wilson",
+    name: "David Wilson",
+    dob: "1955-09-30",
+    contact: "206-555-0890",
+    address: "456 Birch Street, Seattle, WA 98101",
+    gender: "male",
+    created_at: "2025-06-14T09:02:59.064833Z",
+    workspace: 1,
   },
   {
-    id: "anon-82y-f",
-    name: "anon",
-    age: "82Y F",
-    code: "GER321654987321",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:05 AM",
-    hasAlert: true,
+    id: 8,
+    patient_id: "jennifer-adams",
+    name: "Jennifer Adams",
+    dob: "1990-04-25",
+    contact: "303-555-0123",
+    address: "321 Spruce Avenue, Denver, CO 80202",
+    gender: "female",
+    created_at: "2025-06-14T09:02:59.081135Z",
+    workspace: 1,
   },
   {
-    id: "anon-56y-m",
-    name: "anon",
-    age: "56Y M",
-    code: "GAS789456123789",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 07:00 AM",
+    id: 9,
+    patient_id: "michael-brown",
+    name: "Michael Brown",
+    dob: "1972-01-19",
+    contact: "404-555-0456",
+    address: "678 Walnut Court, Atlanta, GA 30301",
+    gender: "male",
+    created_at: "2025-06-14T09:02:59.093118Z",
+    workspace: 1,
   },
   {
-    id: "anon-41y-f",
-    name: "anon",
-    age: "41Y F",
-    code: "END147258369147",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 06:55 AM",
+    id: 10,
+    patient_id: "lisa-parker",
+    name: "Lisa Parker",
+    dob: "1980-08-12",
+    contact: "602-555-0789",
+    address: "135 Poplar Street, Phoenix, AZ 85001",
+    gender: "female",
+    created_at: "2025-06-14T09:02:59.103900Z",
+    workspace: 1,
   },
   {
-    id: "anon-63y-m",
-    name: "anon",
-    age: "63Y M",
-    code: "URO258369147258",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 06:50 AM",
+    id: 11,
+    patient_id: "kevin-martinez",
+    name: "Kevin Martinez",
+    dob: "1995-10-07",
+    contact: "503-555-0234",
+    address: "246 Holly Lane, Portland, OR 97201",
+    gender: "male",
+    created_at: "2025-06-14T09:02:59.117685Z",
+    workspace: 1,
   },
-  {
-    id: "anon-38y-f",
-    name: "anon",
-    age: "38Y F",
-    code: "DER369147258369",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 06:45 AM",
-  },
-  {
-    id: "anon-71y-m",
-    name: "anon",
-    age: "71Y M",
-    code: "PSY147369258147",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 06:40 AM",
-    hasAlert: true,
-  },
-  {
-    id: "anon-26y-f",
-    name: "anon",
-    age: "26Y F",
-    code: "OBS258147369258",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 06:35 AM",
-  },
-  {
-    id: "anon-59y-m",
-    name: "anon",
-    age: "59Y M",
-    code: "RAD369258147369",
-    workspace: "qtrack_release_user_1.s Workspace",
-    date: "Jun 13, 2025 06:30 AM",
-  },
-]
+];
 
 export default function PatientPage() {
-  const router = useRouter()
-  const { patient_uid } = router.query
-  const [activeTab, setActiveTab] = useState("chat")
+  const router = useRouter();
+  const { patient_uid } = router.query;
+  const [activeTab, setActiveTab] = useState("chat");
 
-  const currentPatient = patientsData[patient_uid] || patientsData["anon-116y-m"]
+  const currentPatient = patientsData[patient_uid] || patientsData["anon-116y-m"];
+
+  useEffect(() => {
+    console.log("here");
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(`https://blue-clowns-fold.loca.lt/api/patients`, {
+          headers: {
+            "Content-Type": "application/json",
+            "bypass-tunnel-reminder": "true",
+            // "Access-Control-Allow-Origin": "*",
+          },
+        });
+        const data = await response.json();
+        console.log("data-here", data);
+      } catch (error) {
+        console.log("error-here", error);
+      }
+    };
+    fetchPatientData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      {/* <div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex items-center justify-between">
+      <div className="bg-gray-900 border-b border-gray-700 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="text-lg font-semibold">Worklist</h1>
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-400">⚙️</span>
-            <span className="text-gray-400">🔔</span>
-          </div>
+          <img src="/qureLogo.svg" alt="Qure" className="w-20 h-10" />
         </div>
-        <div className="flex items-center space-x-4">
-          <span className="text-lg font-semibold">{currentPatient.name}</span>
-          <span className="text-gray-400">{currentPatient.status}</span>
-          <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm">
-            👤 Add to Tumor Board
+        <div className="flex items-center space-x-2">
+          <button className="bg-teal-800 p-2 w-28 text-center rounded-lg cursor-pointer">
+            Add
           </button>
-          <span className="text-gray-400">Studies 2</span>
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-400">⚙️</span>
-            <span className="text-gray-400">🔔</span>
-          </div>
-          <span className="text-lg font-semibold">Patient Studies</span>
         </div>
-      </div> */}
+      </div>
 
-      <div className="flex h-[calc(100vh)]">
+      <div className="flex h-[calc(100vh-80px)]">
         {/* Left Sidebar - Patients List */}
         <PatientSidebar patients={allPatients} currentPatientId={patient_uid} />
 
         {/* Center Content */}
-        <PatientContent patient={currentPatient} activeTab={activeTab} setActiveTab={setActiveTab} currentPatient={currentPatient}/>
+        <PatientContent
+          patient={currentPatient}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          currentPatient={currentPatient}
+        />
 
         {/* Right Sidebar - Studies */}
         <StudiesSidebar />
       </div>
     </div>
-  )
+  );
 }

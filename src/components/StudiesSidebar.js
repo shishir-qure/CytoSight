@@ -11,7 +11,11 @@ export default function StudiesSidebar() {
       size: "45.2 MB",
       priority: "Critical",
       complete: true,
-      findings: ["New 1.2cm nodule (RUL)", "Bilateral pneumonia", "Mediastinal lymphadenopathy"],
+      findings: [
+        "New 1.2cm nodule (RUL)",
+        "Bilateral pneumonia",
+        "Mediastinal lymphadenopathy",
+      ],
       videos: [
         { name: "Nodule (Axial)", icon: "▶️" },
         { name: "Pneumonia", icon: "▶️" },
@@ -32,7 +36,11 @@ export default function StudiesSidebar() {
       size: "42.8 MB",
       priority: "Baseline",
       complete: true,
-      comparison: ["No nodule present (NEW finding on current study)", "Lungs clear bilaterally", "Normal mediastinum"],
+      comparison: [
+        "No nodule present (NEW finding on current study)",
+        "Lungs clear bilaterally",
+        "Normal mediastinum",
+      ],
       slices: [
         { name: "RUL Normal", icon: "▶️" },
         { name: "Clear Lungs", icon: "▶️" },
@@ -84,10 +92,10 @@ export default function StudiesSidebar() {
       description: "Transthoracic echocardiogram. Normal cardiac function.",
       actions: ["View", "Report"],
     },
-  ]
+  ];
 
   return (
-    <div className="w-96 bg-gray-800 border-l border-gray-700 overflow-y-auto">
+    <div className="w-96 bg-gray-900 border-l border-gray-700 overflow-y-auto">
       <div className="p-4 border-b border-gray-700">
         <h2 className="text-lg font-semibold">Patient Studies</h2>
         <p className="text-sm text-gray-400">Auto-retrieved via PACS connection</p>
@@ -100,9 +108,15 @@ export default function StudiesSidebar() {
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-start space-x-3">
                 <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  {study.type.includes("CT") && <span className="text-white text-sm">📊</span>}
-                  {study.type.includes("X-ray") && <span className="text-white text-sm">📷</span>}
-                  {study.type.includes("Echo") && <span className="text-white text-sm">❤️</span>}
+                  {study.type.includes("CT") && (
+                    <span className="text-white text-sm">📊</span>
+                  )}
+                  {study.type.includes("X-ray") && (
+                    <span className="text-white text-sm">📷</span>
+                  )}
+                  {study.type.includes("Echo") && (
+                    <span className="text-white text-sm">❤️</span>
+                  )}
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">{study.type}</h3>
@@ -114,18 +128,28 @@ export default function StudiesSidebar() {
               </div>
               <div className="flex flex-col space-y-1">
                 {study.priority === "Critical" && (
-                  <span className="bg-red-600 text-white px-2 py-1 rounded text-xs">🔴 Critical</span>
+                  <span className="bg-red-600 text-white px-2 py-1 rounded text-xs">
+                    🔴 Critical
+                  </span>
                 )}
                 {study.priority === "Baseline" && (
-                  <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">✅ Baseline</span>
+                  <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">
+                    ✅ Baseline
+                  </span>
                 )}
                 {study.priority === "Abnormal" && (
-                  <span className="bg-orange-600 text-white px-2 py-1 rounded text-xs">⚠️ Abnormal</span>
+                  <span className="bg-orange-600 text-white px-2 py-1 rounded text-xs">
+                    ⚠️ Abnormal
+                  </span>
                 )}
                 {study.priority === "Normal" && (
-                  <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">✅ Normal</span>
+                  <span className="bg-green-600 text-white px-2 py-1 rounded text-xs">
+                    ✅ Normal
+                  </span>
                 )}
-                {study.complete && <span className="text-green-400 text-xs">Complete</span>}
+                {study.complete && (
+                  <span className="text-green-400 text-xs">Complete</span>
+                )}
               </div>
             </div>
 
@@ -136,7 +160,9 @@ export default function StudiesSidebar() {
             {/* AI Findings */}
             {study.findings && (
               <div className="bg-red-900 rounded-lg p-3 mb-4">
-                <div className="text-red-300 font-semibold text-sm mb-2">🤖 AI Key Findings:</div>
+                <div className="text-red-300 font-semibold text-sm mb-2">
+                  🤖 AI Key Findings:
+                </div>
                 <ul className="text-xs text-red-200 space-y-1">
                   {study.findings.map((finding, index) => (
                     <li key={index}>• {finding}</li>
@@ -148,7 +174,9 @@ export default function StudiesSidebar() {
             {/* AI Comparison */}
             {study.comparison && (
               <div className="bg-green-900 rounded-lg p-3 mb-4">
-                <div className="text-green-300 font-semibold text-sm mb-2">🤖 AI Comparison:</div>
+                <div className="text-green-300 font-semibold text-sm mb-2">
+                  🤖 AI Comparison:
+                </div>
                 <ul className="text-xs text-green-200 space-y-1">
                   {study.comparison.map((item, index) => (
                     <li key={index}>• {item}</li>
@@ -160,7 +188,9 @@ export default function StudiesSidebar() {
             {/* AI Analysis */}
             {study.aiAnalysis && (
               <div className="bg-orange-900 rounded-lg p-3 mb-4">
-                <div className="text-orange-300 font-semibold text-sm mb-2">🤖 AI Analysis:</div>
+                <div className="text-orange-300 font-semibold text-sm mb-2">
+                  🤖 AI Analysis:
+                </div>
                 <ul className="text-xs text-orange-200 space-y-1">
                   {study.aiAnalysis.map((analysis, index) => (
                     <li key={index}>• {analysis}</li>
@@ -172,7 +202,9 @@ export default function StudiesSidebar() {
             {/* Key Slice Videos */}
             {study.videos && (
               <div className="mb-4">
-                <div className="text-sm font-semibold mb-2 text-gray-300">🎬 Key Slice Videos (AI Generated):</div>
+                <div className="text-sm font-semibold mb-2 text-gray-300">
+                  🎬 Key Slice Videos (AI Generated):
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {study.videos.map((video, index) => (
                     <button
@@ -190,7 +222,9 @@ export default function StudiesSidebar() {
             {/* Key Slices (Normal Study) */}
             {study.slices && (
               <div className="mb-4">
-                <div className="text-sm font-semibold mb-2 text-gray-300">🎬 Key Slices (Normal Study):</div>
+                <div className="text-sm font-semibold mb-2 text-gray-300">
+                  🎬 Key Slices (Normal Study):
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {study.slices.map((slice, index) => (
                     <button
@@ -208,7 +242,9 @@ export default function StudiesSidebar() {
             {/* Key Images */}
             {study.keyImages && (
               <div className="mb-4">
-                <div className="text-sm font-semibold mb-2 text-gray-300">🖼️ Key Images:</div>
+                <div className="text-sm font-semibold mb-2 text-gray-300">
+                  🖼️ Key Images:
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {study.keyImages.map((image, index) => (
                     <button
@@ -246,5 +282,5 @@ export default function StudiesSidebar() {
         ))}
       </div>
     </div>
-  )
+  );
 }

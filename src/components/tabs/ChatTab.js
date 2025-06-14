@@ -163,7 +163,7 @@ export default function ChatTab({ patient }) {
         {/* Action Buttons */}
         <div className="grid grid-cols-5 gap-3 mb-4">
           {/* AI Assistant Label and Action Buttons */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="text-white font-semibold">
               AI Medical
               <br />

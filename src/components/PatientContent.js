@@ -1,57 +1,47 @@
-"use client"
+"use client";
 
-import ChatTab from "./tabs/ChatTab"
-import VitalsTab from "./tabs/VitalsTab"
-import EncountersTab from "./tabs/EncountersTab"
-import PhysicianNotesTab from "./tabs/PhysicianNotesTab"
-import DiagnosticTestsTab from "./tabs/DiagnosticTestsTab"
-import PatientSummaryTab from "./tabs/PatientSummaryTab"
+import ChatTab from "./tabs/ChatTab";
+import VitalsTab from "./tabs/VitalsTab";
+import EncountersTab from "./tabs/EncountersTab";
+import PhysicianNotesTab from "./tabs/PhysicianNotesTab";
+import DiagnosticTestsTab from "./tabs/DiagnosticTestsTab";
+import PatientSummaryTab from "./tabs/PatientSummaryTab";
+import RiskTab from "./tabs/RiskTab";
+import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
+import useMicrophone from "@/hooks/useMicrophone";
 
 const tabs = [
   { id: "chat", label: "Chat", icon: "💬" },
   { id: "vitals", label: "Vitals", icon: "📊" },
+  { id: "risk", label: "Risk", icon: "🔍" },
   { id: "encounters", label: "Encounters", icon: "📋" },
   { id: "notes", label: "Physician Notes", icon: "📝" },
   { id: "tests", label: "Diagnostic Tests", icon: "🔬" },
   { id: "summary", label: "Patient Summary", icon: "👤" },
-]
+];
 
-export default function PatientContent({ patient, activeTab, setActiveTab, currentPatient }) {
+export default function PatientContent({
+  patient,
+  activeTab,
+  setActiveTab,
+  currentPatient,
+}) {
+  const { toggleRecording, isRecording } = useMicrophone(activeTab);
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
       <div className="flex flex-col space-y-4 bg-gray-800 p-4 border-b border-gray-700">
-         <div className="flex items-center justify-between space-x-4">
+        <div className="flex items-center justify-between space-x-4">
           <div className="flex items-center space-x-4">
             <span className="text-lg font-semibold">{currentPatient.name}</span>
-             <span className="text-gray-400">{currentPatient.status}</span>
+            <span className="text-gray-400">{currentPatient.status}</span>
           </div>
           <div className="flex items-center space-x-4">
-             <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm">
-            👤 Add to Tumor Board
-          </button>
-          <span className="text-gray-400">Studies 2</span>
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-400">⚙️</span>
-            <span className="text-gray-400">🔔</span>
-         </div>
+            <button className="bg-teal-700 hover:bg-teal-800 px-4 py-2 rounded-lg text-sm">
+              Add to Tumor Board
+            </button>
           </div>
         </div>
-      {/* Patient Info Header */}
-      <div className="">
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-            Current Visit: {patient.currentVisit}
-          </span>
-          <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm">Previous: {patient.previous}</span>
-          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-            Active Problems: {patient.activeProblems}
-          </span>
-        </div>
-        <div className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm inline-block">
-          Alerts: {patient.alerts}
-        </div>
       </div>
-     </div>
 
       {/* Tabs */}
       <div className="border-b border-gray-700 bg-gray-800">
@@ -70,6 +60,14 @@ export default function PatientContent({ patient, activeTab, setActiveTab, curre
               {tab.label}
             </button>
           ))}
+
+          <button onClick={toggleRecording} className="ml-auto px-4 py-2 cursor-pointer">
+            {!isRecording ? (
+              <FaMicrophoneSlash className="text-gray-400 w-6 h-6" />
+            ) : (
+              <FaMicrophone className="text-gray-100 w-6 h-6" />
+            )}
+          </button>
         </div>
       </div>
 
@@ -81,7 +79,8 @@ export default function PatientContent({ patient, activeTab, setActiveTab, curre
         {activeTab === "notes" && <PhysicianNotesTab />}
         {activeTab === "tests" && <DiagnosticTestsTab />}
         {activeTab === "summary" && <PatientSummaryTab />}
+        {activeTab === "risk" && <RiskTab />}
       </div>
     </div>
-  )
+  );
 }
