@@ -102,7 +102,7 @@ export default function PatientPage() {
         />
 
         {/* Right Sidebar - Studies */}
-        <StudiesSidebar />
+        <StudiesSidebar patient_uid={patient_uid} />
       </div>
     </div>
   );
