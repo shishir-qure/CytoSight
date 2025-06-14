@@ -8,23 +8,30 @@ import PhysicianNotesTab from "./tabs/PhysicianNotesTab";
 import DiagnosticTestsTab from "./tabs/DiagnosticTestsTab";
 import PatientSummaryTab from "./tabs/PatientSummaryTab";
 import RiskTab from "./tabs/RiskTab";
-import { FaCheckCircle, FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
-import useMicrophone from "@/hooks/useMicrophone";
-import AnimatedWaveform from "./AnimatedWaveform";
-import { useRouter } from "next/router";
+import {
+  FaCheckCircle,
+  FaComments,
+  FaNotesMedical,
+  FaFileMedicalAlt,
+} from "react-icons/fa";
+import { TbActivityHeartbeat } from "react-icons/tb";
+import { IoIosMedical } from "react-icons/io";
+import { CiMedicalCross } from "react-icons/ci";
+import { FaBookMedical } from "react-icons/fa6";
+import { GiArchiveResearch } from "react-icons/gi";
 import QuickSearch from "./QuickSearch";
 import Toast from "./Toast";
 import classNames from "classnames";
 
 const tabs = [
-  { id: "chat", label: "Chat", icon: "💬" },
-  { id: "vitals", label: "Vitals", icon: "📊" },
-  { id: "risk", label: "Risk", icon: "🔍" },
-  { id: "encounters", label: "Encounters", icon: "📋" },
-  { id: "notes", label: "Physician Notes", icon: "📝" },
-  { id: "tests", label: "Diagnostic Tests", icon: "🔬" },
-  { id: "summary", label: "Patient Summary", icon: "👤" },
-  { id: "quickResearch", label: "Quick Research", icon: "🔍" },
+  { id: "chat", label: "Chat", icon: <FaComments /> },
+  { id: "vitals", label: "Vitals", icon: <FaFileMedicalAlt /> },
+  { id: "risk", label: "Risk", icon: <IoIosMedical /> },
+  { id: "encounters", label: "Encounters", icon: <TbActivityHeartbeat /> },
+  { id: "notes", label: "Physician Notes", icon: <FaNotesMedical /> },
+  { id: "tests", label: "Diagnostic Tests", icon: <CiMedicalCross /> },
+  { id: "summary", label: "Patient Summary", icon: <FaBookMedical /> },
+  { id: "quickResearch", label: "Quick Research", icon: <GiArchiveResearch /> },
 ];
 
 export default function PatientContent({
@@ -32,16 +39,9 @@ export default function PatientContent({
   setActiveTab,
   currentPatient,
   currentPatientVisit,
+  setCurrentPatient,
 }) {
-  const router = useRouter();
   const [isSuccess, setIsSuccess] = useState(false);
-  // const { toggleRecording, isRecording, updatedVitals } = useMicrophone({
-  //   activeTab,
-  //   vitals:
-  //     currentPatientVisit?.length > 0
-  //       ? currentPatientVisit[currentPatientVisit?.length - 1]?.observations
-  //       : "",
-  // });
 
   useEffect(() => {
     if (currentPatient?.patient?.id) {
@@ -106,7 +106,7 @@ export default function PatientContent({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
+              className={`px-4 py-3 text-sm font-medium flex items-center border-b-2 transition-colors cursor-pointer ${
                 activeTab === tab.id
                   ? "border-teal-500 text-teal-400 bg-gray-800"
                   : "border-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-800"
@@ -116,32 +116,15 @@ export default function PatientContent({
               {tab.label}
             </button>
           ))}
-
-          {/* <button
-            onClick={toggleRecording}
-            className="ml-auto px-4 py-2 cursor-pointer flex space-x-2 items-center"
-          >
-            {isRecording && <AnimatedWaveform isRecording={isRecording} barCounts={20} />}
-            {!isRecording ? (
-              <FaMicrophoneSlash className="text-gray-400 w-6 h-6" />
-            ) : (
-              <FaMicrophone className="text-gray-100 w-6 h-6" />
-            )}
-          </button> */}
         </div>
       </div>
 
       {/* Tab Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === "chat" && <ChatTab />}
+        {activeTab === "chat" && <ChatTab currentPatient={currentPatient} />}
         {activeTab === "vitals" && (
           <VitalsTab
-            vitals={
-              // updatedVitals?.length > 0
-              //   ? updatedVitals
-              //   :
-              currentPatientVisit[currentPatientVisit.length - 1]?.observations
-            }
+            vitals={currentPatientVisit[currentPatientVisit.length - 1]?.observations}
           />
         )}
         {activeTab === "encounters" && (
@@ -159,7 +142,12 @@ export default function PatientContent({
         {activeTab === "risk" && (
           <RiskTab riskAssessment={currentPatient?.risk_assessment} />
         )}
-        {activeTab === "quickResearch" && <QuickSearch currentPatient={currentPatient} />}
+        {activeTab === "quickResearch" && (
+          <QuickSearch
+            currentPatient={currentPatient}
+            setCurrentPatient={setCurrentPatient}
+          />
+        )}
       </div>
     </div>
   );

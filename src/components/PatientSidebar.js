@@ -60,8 +60,6 @@ export default function PatientSidebar({ patients, currentPatientId, setPatientD
     setPatientData(data?.data);
   };
 
-  console.log({ filter });
-
   return (
     <div className="w-80 bg-gray-900 border-r border-gray-700 flex flex-col">
       {/* Stats */}

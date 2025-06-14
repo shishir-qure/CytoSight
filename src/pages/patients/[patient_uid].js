@@ -7,6 +7,7 @@ import PatientContent from "../../components/PatientContent";
 import StudiesSidebar from "../../components/StudiesSidebar";
 import DropdownMenu from "../../components/common/DropdownMenu";
 import { BsStars } from "react-icons/bs";
+import AIAssistantWidget from "../../components/common/AIAssistantWidget";
 
 export default function PatientPage() {
   const router = useRouter();
@@ -99,11 +100,16 @@ export default function PatientPage() {
           setActiveTab={setActiveTab}
           currentPatient={currentPatient}
           currentPatientVisit={currentPatientVisit}
+          setCurrentPatient={setCurrentPatient}
         />
 
         {/* Right Sidebar - Studies */}
         <StudiesSidebar patient_uid={patient_uid} />
       </div>
+      <AIAssistantWidget
+        setCurrentPatient={setCurrentPatient}
+        currentPatient={currentPatient}
+      />
     </div>
   );
 }

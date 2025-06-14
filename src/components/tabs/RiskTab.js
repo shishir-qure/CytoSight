@@ -2,7 +2,8 @@
 
 import classNames from "classnames";
 import { useState } from "react";
-import { BsStars } from "react-icons/bs";
+import { BsExclamationTriangle, BsStars } from "react-icons/bs";
+import { FaShieldAlt } from "react-icons/fa";
 
 export default function RiskTab({ riskAssessment }) {
   const tags = [
@@ -28,7 +29,7 @@ export default function RiskTab({ riskAssessment }) {
       id: 4,
       name: "Confirmed",
       value: "Confirmed",
-      color: "bg-purple-500",
+      color: "bg-red-700",
     },
   ];
   return (
@@ -43,13 +44,10 @@ export default function RiskTab({ riskAssessment }) {
               {tags.map((tag) => (
                 <div
                   key={tag.id}
-                  className={classNames(
-                    `p-1 rounded-full w-28 text-center cursor-pointer`,
-                    {
-                      [`${tag.color}`]: tag.value === riskAssessment?.risk_level,
-                      "border border-gray-600": tag.value !== riskAssessment?.risk_level,
-                    }
-                  )}
+                  className={classNames(`p-1 rounded-full w-28 text-center`, {
+                    [`${tag.color}`]: tag.value === riskAssessment?.risk_level,
+                    "border border-gray-600": tag.value !== riskAssessment?.risk_level,
+                  })}
                 >
                   {tag.name}
                 </div>
@@ -58,21 +56,31 @@ export default function RiskTab({ riskAssessment }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <p className="font-semibold text-lg flex items-center gap-2">
+            <p className="font-semibold text-xl flex items-center gap-2">
               <BsStars className="text-yellow-500" />
-              AI Key Findings
+              AI Risk Analysis
             </p>
-            <div className="flex flex-col space-y-4">
-              <ul className="text-base list-disc list-inside text-gray-200">
-                {riskAssessment?.drivers?.map((driver) => (
-                  <li key={driver.id}>{driver}</li>
-                ))}
-              </ul>
-              <ul className="text-base list-disc list-inside text-gray-200">
-                {riskAssessment?.lack_of_risk_evidence?.map((evidence) => (
-                  <li key={evidence.id}>{evidence}</li>
-                ))}
-              </ul>
+            <div className="flex flex-col space-y-6 ml-5">
+              {riskAssessment?.drivers?.length > 0 && (
+                <ul className="text-base list-disc list-inside text-gray-100">
+                  <div className="flex items-center gap-2 text-lg font-semibold text-gray-200">
+                    <BsExclamationTriangle className="text-red-500" /> Risk Drivers
+                  </div>
+                  {riskAssessment?.drivers?.map((driver) => (
+                    <li key={driver.id}>{driver}</li>
+                  ))}
+                </ul>
+              )}
+              {riskAssessment?.lack_of_risk_evidence?.length > 0 && (
+                <ul className="text-base list-disc list-inside text-gray-100">
+                  <div className="flex items-center gap-2 text-lg font-semibold text-gray-200">
+                    <FaShieldAlt className="text-green-400" /> Protective Factors
+                  </div>
+                  {riskAssessment?.lack_of_risk_evidence?.map((evidence) => (
+                    <li key={evidence.id}>{evidence}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </div>
