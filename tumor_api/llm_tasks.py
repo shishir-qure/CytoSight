@@ -22,6 +22,7 @@ def get_risk_assessment(patient_id):
         • Low: estimated probability less than 5% in 2 years
         • Moderate: 5 to 15%
         • High: greater than 15%
+        • Confirmed: Available proof from the context that patient has lung cancer confirmation past or current
 
         Return your answer in this exact JSON format with no additional text:
         {
