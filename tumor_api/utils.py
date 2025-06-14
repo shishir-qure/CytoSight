@@ -5,3 +5,8 @@ class Gender(models.TextChoices):
     FEMALE = "female"
     OTHER = "other"
     NA = "n/a"
+
+
+class DiagnosticReportStatus(models.TextChoices):
+    NORMAL = "normal", "Normal"
+    ABNORMAL = "abnormal", "Abnormal"
