@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import ChatTab from "./tabs/ChatTab";
 import VitalsTab from "./tabs/VitalsTab";
 import EncountersTab from "./tabs/EncountersTab";
@@ -7,11 +8,13 @@ import PhysicianNotesTab from "./tabs/PhysicianNotesTab";
 import DiagnosticTestsTab from "./tabs/DiagnosticTestsTab";
 import PatientSummaryTab from "./tabs/PatientSummaryTab";
 import RiskTab from "./tabs/RiskTab";
-import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
+import { FaCheckCircle, FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import useMicrophone from "@/hooks/useMicrophone";
 import AnimatedWaveform from "./AnimatedWaveform";
 import { useRouter } from "next/router";
 import QuickSearch from "./QuickSearch";
+import Toast from "./Toast";
+import classNames from "classnames";
 
 const tabs = [
   { id: "chat", label: "Chat", icon: "💬" },
@@ -31,6 +34,7 @@ export default function PatientContent({
   currentPatientVisit,
 }) {
   const router = useRouter();
+  const [isSuccess, setIsSuccess] = useState(false);
   // const { toggleRecording, isRecording, updatedVitals } = useMicrophone({
   //   activeTab,
   //   vitals:
@@ -38,6 +42,31 @@ export default function PatientContent({
   //       ? currentPatientVisit[currentPatientVisit?.length - 1]?.observations
   //       : "",
   // });
+
+  useEffect(() => {
+    if (currentPatient?.patient?.id) {
+      setIsSuccess(false);
+    }
+  }, [currentPatient?.patient?.id]);
+
+  const handleAddToTumorBoard = () => {
+    const fetchTumorBoard = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/patients/${currentPatient?.patient?.id}/add_to_tumor_board/`,
+          {
+            method: "POST",
+          }
+        );
+        await response.json();
+        setIsSuccess(true);
+        Toast.success("Patient added to tumor board");
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchTumorBoard();
+  };
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
       <div className="flex flex-col space-y-4 bg-gray-800 p-4 border-b border-gray-700">
@@ -47,12 +76,24 @@ export default function PatientContent({
           </div>
           <div className="flex items-center space-x-4">
             <button
-              onClick={() =>
-                router.push(`/tumor-board?patient_uid=${currentPatient?.patient?.id}`)
-              }
-              className="bg-teal-700 hover:bg-teal-800 px-4 py-2 rounded-lg text-sm cursor-pointer"
+              onClick={handleAddToTumorBoard}
+              className={classNames(
+                "bg-teal-700 hover:bg-teal-800 px-4 py-2 flex items-center space-x-2 rounded-lg text-sm cursor-pointer",
+                {
+                  "!bg-red-800":
+                    currentPatient?.patient?.added_to_tumor_board || isSuccess,
+                }
+              )}
+              disabled={currentPatient?.patient?.added_to_tumor_board || isSuccess}
             >
-              Add to Tumor Board
+              {(currentPatient?.patient?.added_to_tumor_board || isSuccess) && (
+                <FaCheckCircle />
+              )}
+              <p>
+                {currentPatient?.patient?.added_to_tumor_board || isSuccess
+                  ? "Added to Tumor Board"
+                  : "Add to Tumor Board"}
+              </p>
             </button>
           </div>
         </div>
@@ -96,9 +137,10 @@ export default function PatientContent({
         {activeTab === "vitals" && (
           <VitalsTab
             vitals={
-              updatedVitals?.length > 0
-                ? updatedVitals
-                : currentPatientVisit[currentPatientVisit.length - 1]?.observations
+              // updatedVitals?.length > 0
+              //   ? updatedVitals
+              //   :
+              currentPatientVisit[currentPatientVisit.length - 1]?.observations
             }
           />
         )}

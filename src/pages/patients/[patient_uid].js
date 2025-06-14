@@ -19,7 +19,8 @@ export default function PatientPage() {
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/patients`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/patients/`, {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -85,7 +86,11 @@ export default function PatientPage() {
 
       <div className="flex h-[calc(100vh-80px)]">
         {/* Left Sidebar - Patients List */}
-        <PatientSidebar patients={patientData} currentPatientId={patient_uid} />
+        <PatientSidebar
+          patients={patientData}
+          setPatientData={setPatientData}
+          currentPatientId={patient_uid}
+        />
 
         {/* Center Content */}
         <PatientContent

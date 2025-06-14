@@ -50,7 +50,7 @@ const QuickSearch = ({ currentPatient }) => {
       });
       const _molecularData = await molecularData.json();
       setMolecularData(JSON.parse(_molecularData?.result ?? "{}"));
-      // setLoading(false);
+      setLoading(false);
     };
     if (!!currentPatient) {
       fetchMolecularData();
@@ -69,7 +69,7 @@ const QuickSearch = ({ currentPatient }) => {
             Find the best matching case trials for your patient
           </p>
         </div>
-        {!loading ? (
+        {loading ? (
           <div className="flex items-center justify-center h-40">
             <svg className="animate-spin h-8 w-8 text-teal-400 mr-3" viewBox="0 0 24 24">
               <circle

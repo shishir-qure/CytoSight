@@ -52,7 +52,6 @@ export default function ChatTab({}) {
       {/* Scrollable Chat Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Patient Info Cards */}
-        <p>Messgae</p>
 
         {/* Chat Messages */}
         <div className="px-4 pb-4">
