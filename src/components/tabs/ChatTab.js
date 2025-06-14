@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function ChatTab({ patient }) {
+export default function ChatTab({}) {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -52,82 +52,7 @@ export default function ChatTab({ patient }) {
       {/* Scrollable Chat Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Patient Info Cards */}
-        <div className="p-4 space-y-4">
-          {/* Reminder Card */}
-          <div className="bg-orange-600 text-white p-4 rounded-lg flex items-center justify-between">
-            <div className="flex items-center">
-              <span className="mr-2">⚠️</span>
-              <span>Remind me to... | Due in 18 days</span>
-            </div>
-            <span className="bg-green-500 px-2 py-1 rounded text-sm">AI Included: ✓</span>
-          </div>
-
-          {/* Patient Details Card */}
-          <div className="bg-teal-600 text-white p-4 rounded-lg">
-            <div className="mb-2">
-              <span className="bg-green-600 px-2 py-1 rounded text-sm">
-                5 fields completed
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="font-semibold">Age:</div>
-                <div>{patient.age}</div>
-              </div>
-              <div>
-                <div className="font-semibold">Gender:</div>
-                <div>{patient.gender}</div>
-              </div>
-              <div>
-                <div className="font-semibold">Imaging Site:</div>
-                <div>{patient.imagingSite}</div>
-              </div>
-              <div>
-                <div className="font-semibold">Clinical Status:</div>
-                <div>{patient.clinicalStatus}</div>
-              </div>
-              <div className="col-span-2">
-                <div className="font-semibold">Ordering Department:</div>
-                <div>{patient.orderingDepartment}</div>
-              </div>
-            </div>
-            <button className="mt-3 text-blue-200 hover:text-blue-100 text-sm">
-              Read more
-            </button>
-          </div>
-
-          {/* Radiology Encounter Card */}
-          <div className="bg-teal-600 text-white p-4 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <span className="mr-2">📋</span>
-                <span className="font-semibold">Radiology Encounter</span>
-              </div>
-              <span>→</span>
-            </div>
-            <div className="text-sm mb-2">19 fields completed</div>
-            <div className="space-y-2 text-sm">
-              <div>
-                <span className="font-semibold">Type of Modality:</span> CT Chest
-              </div>
-              <div>
-                <span className="font-semibold">Primary Body Part Examined:</span> Chest
-              </div>
-              <div>
-                <span className="font-semibold">Prior Comparative Report:</span> Available
-              </div>
-              <div>
-                <span className="font-semibold">Lung Nodule Found:</span> Yes
-              </div>
-              <div>
-                <span className="font-semibold">Solitary Nodule:</span> No
-              </div>
-            </div>
-            <button className="mt-3 text-blue-200 hover:text-blue-100 text-sm">
-              Read more
-            </button>
-          </div>
-        </div>
+        <p>Messgae</p>
 
         {/* Chat Messages */}
         <div className="px-4 pb-4">
@@ -161,9 +86,9 @@ export default function ChatTab({ patient }) {
       {/* AI Medical Assistant Bottom Section */}
       <div className="border-t border-gray-700 bg-gray-800 p-4">
         {/* Action Buttons */}
-        <div className="grid grid-cols-5 gap-3 mb-4">
+        <div className="grid grid-cols-4 gap-3 mb-4">
           {/* AI Assistant Label and Action Buttons */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className="text-white font-semibold">
               AI Medical
               <br />
@@ -203,17 +128,6 @@ export default function ChatTab({ patient }) {
               <div>Notes</div>
             </div>
           </button>
-
-          <button
-            onClick={() => handleActionButton("Generate Medications")}
-            className="bg-orange-600 hover:bg-orange-700 text-white p-3 rounded-lg flex items-center space-x-5 transition-colors"
-          >
-            <span className="text-lg">➕</span>
-            <div className="text-xs text-center">
-              <div>Generate</div>
-              <div>Medications</div>
-            </div>
-          </button>
         </div>
 
         {/* Message Input */}
@@ -228,7 +142,7 @@ export default function ChatTab({ patient }) {
           />
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg transition-colors"
           >
             Send
           </button>

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { usePatientReports } from "../components/ReportSidebar/services/usePatientReports";
 
@@ -13,7 +14,7 @@ export default function StudiesSidebar({ patient_uid }) {
 
 
   return (
-    <div className="w-96 bg-gray-800 border-l border-gray-700 overflow-y-auto">
+    <div className="w-96 bg-gray-900 border-l border-gray-700 overflow-y-auto">
       <div className="p-4 border-b border-gray-700">
         <h2 className="text-lg font-semibold">Patient Studies</h2>
         <p className="text-sm text-gray-400">Auto-retrieved via PACS connection</p>
@@ -22,6 +23,7 @@ export default function StudiesSidebar({ patient_uid }) {
 
 
       <div className="p-4 space-y-6">
+
         <div key={study.id} className="bg-gray-700 rounded-lg p-4">
 
           <div className="flex items-start justify-between mb-3">
@@ -33,6 +35,7 @@ export default function StudiesSidebar({ patient_uid }) {
               </div>
               <div>
                 <div className="font-semibold text-white uppercase text-2xl">{study.scan_type} </div>
+
 
               </div>
             </div>
@@ -46,6 +49,7 @@ export default function StudiesSidebar({ patient_uid }) {
             </ul>
           </div>}
 
+
           {study?.keyslices_dict && <div className="mb-4">
             <div className="text-sm font-semibold mb-2 text-gray-300">🎬 Key Slice Videos (AI Generated):</div>
             <div className="">
@@ -56,6 +60,7 @@ export default function StudiesSidebar({ patient_uid }) {
                 keySlices={study?.keyslices_dict}
               // executeTask={executeTask}
               />
+
             </div>
           </div>}
 
@@ -64,5 +69,5 @@ export default function StudiesSidebar({ patient_uid }) {
 
       </div>
     </div>
-  )
+  );
 }

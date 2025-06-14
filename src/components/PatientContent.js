@@ -1,57 +1,62 @@
-"use client"
+"use client";
 
-import ChatTab from "./tabs/ChatTab"
-import VitalsTab from "./tabs/VitalsTab"
-import EncountersTab from "./tabs/EncountersTab"
-import PhysicianNotesTab from "./tabs/PhysicianNotesTab"
-import DiagnosticTestsTab from "./tabs/DiagnosticTestsTab"
-import PatientSummaryTab from "./tabs/PatientSummaryTab"
+import ChatTab from "./tabs/ChatTab";
+import VitalsTab from "./tabs/VitalsTab";
+import EncountersTab from "./tabs/EncountersTab";
+import PhysicianNotesTab from "./tabs/PhysicianNotesTab";
+import DiagnosticTestsTab from "./tabs/DiagnosticTestsTab";
+import PatientSummaryTab from "./tabs/PatientSummaryTab";
+import RiskTab from "./tabs/RiskTab";
+import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
+import useMicrophone from "@/hooks/useMicrophone";
+import AnimatedWaveform from "./AnimatedWaveform";
+import { useRouter } from "next/router";
+import QuickSearch from "./QuickSearch";
 
 const tabs = [
   { id: "chat", label: "Chat", icon: "💬" },
   { id: "vitals", label: "Vitals", icon: "📊" },
+  { id: "risk", label: "Risk", icon: "🔍" },
   { id: "encounters", label: "Encounters", icon: "📋" },
   { id: "notes", label: "Physician Notes", icon: "📝" },
   { id: "tests", label: "Diagnostic Tests", icon: "🔬" },
   { id: "summary", label: "Patient Summary", icon: "👤" },
-]
+  { id: "quickResearch", label: "Quick Research", icon: "🔍" },
+];
 
-export default function PatientContent({ patient, activeTab, setActiveTab, currentPatient }) {
+export default function PatientContent({
+  activeTab,
+  setActiveTab,
+  currentPatient,
+  currentPatientVisit,
+}) {
+  const router = useRouter();
+  // const { toggleRecording, isRecording, updatedVitals } = useMicrophone({
+  //   activeTab,
+  //   vitals:
+  //     currentPatientVisit?.length > 0
+  //       ? currentPatientVisit[currentPatientVisit?.length - 1]?.observations
+  //       : "",
+  // });
   return (
     <div className="flex-1 flex flex-col bg-gray-900">
       <div className="flex flex-col space-y-4 bg-gray-800 p-4 border-b border-gray-700">
-         <div className="flex items-center justify-between space-x-4">
+        <div className="flex items-center justify-between space-x-4">
           <div className="flex items-center space-x-4">
-            <span className="text-lg font-semibold">{currentPatient.name}</span>
-             <span className="text-gray-400">{currentPatient.status}</span>
+            <span className="text-lg font-semibold">{currentPatient?.patient?.name}</span>
           </div>
           <div className="flex items-center space-x-4">
-             <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm">
-            👤 Add to Tumor Board
-          </button>
-          <span className="text-gray-400">Studies 2</span>
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-400">⚙️</span>
-            <span className="text-gray-400">🔔</span>
-         </div>
+            <button
+              onClick={() =>
+                router.push(`/tumor-board?patient_uid=${currentPatient?.patient?.id}`)
+              }
+              className="bg-teal-700 hover:bg-teal-800 px-4 py-2 rounded-lg text-sm cursor-pointer"
+            >
+              Add to Tumor Board
+            </button>
           </div>
-        </div>
-      {/* Patient Info Header */}
-      <div className="">
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm">
-            Current Visit: {patient.currentVisit}
-          </span>
-          <span className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm">Previous: {patient.previous}</span>
-          <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm">
-            Active Problems: {patient.activeProblems}
-          </span>
-        </div>
-        <div className="bg-yellow-600 text-white px-3 py-1 rounded-full text-sm inline-block">
-          Alerts: {patient.alerts}
         </div>
       </div>
-     </div>
 
       {/* Tabs */}
       <div className="border-b border-gray-700 bg-gray-800">
@@ -62,7 +67,7 @@ export default function PatientContent({ patient, activeTab, setActiveTab, curre
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                 activeTab === tab.id
-                  ? "border-blue-500 text-blue-400 bg-gray-800"
+                  ? "border-teal-500 text-teal-400 bg-gray-800"
                   : "border-transparent text-gray-400 hover:text-gray-300 hover:bg-gray-800"
               }`}
             >
@@ -70,18 +75,50 @@ export default function PatientContent({ patient, activeTab, setActiveTab, curre
               {tab.label}
             </button>
           ))}
+
+          {/* <button
+            onClick={toggleRecording}
+            className="ml-auto px-4 py-2 cursor-pointer flex space-x-2 items-center"
+          >
+            {isRecording && <AnimatedWaveform isRecording={isRecording} barCounts={20} />}
+            {!isRecording ? (
+              <FaMicrophoneSlash className="text-gray-400 w-6 h-6" />
+            ) : (
+              <FaMicrophone className="text-gray-100 w-6 h-6" />
+            )}
+          </button> */}
         </div>
       </div>
 
       {/* Tab Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === "chat" && <ChatTab patient={patient} />}
-        {activeTab === "vitals" && <VitalsTab />}
-        {activeTab === "encounters" && <EncountersTab />}
-        {activeTab === "notes" && <PhysicianNotesTab />}
-        {activeTab === "tests" && <DiagnosticTestsTab />}
-        {activeTab === "summary" && <PatientSummaryTab />}
+        {activeTab === "chat" && <ChatTab />}
+        {activeTab === "vitals" && (
+          <VitalsTab
+            vitals={
+              updatedVitals?.length > 0
+                ? updatedVitals
+                : currentPatientVisit[currentPatientVisit.length - 1]?.observations
+            }
+          />
+        )}
+        {activeTab === "encounters" && (
+          <EncountersTab encounters={currentPatient?.visit_encounters} />
+        )}
+        {activeTab === "notes" && (
+          <PhysicianNotesTab physicianNotes={currentPatient?.clinical_notes} />
+        )}
+        {activeTab === "tests" && (
+          <DiagnosticTestsTab diagnosticTests={currentPatient?.diagnostic_tests} />
+        )}
+        {activeTab === "summary" && (
+          <PatientSummaryTab summary={currentPatient?.patient_summary} />
+        )}
+        {activeTab === "risk" && (
+          <RiskTab riskAssessment={currentPatient?.risk_assessment} />
+        )}
+        {activeTab === "quickResearch" && <QuickSearch currentPatient={currentPatient} />}
       </div>
     </div>
-  )
+  );
 }
