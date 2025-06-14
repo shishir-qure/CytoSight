@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format, differenceInYears, parseISO } from "date-fns";
 import { useState } from "react";
+import classNames from "classnames";
 
 // Helper function to calculate age
 const calculateAge = (dob) => {
@@ -23,22 +24,46 @@ const filterOptions = [
 
 export default function PatientSidebar({ patients, currentPatientId, setPatientData }) {
   const [filter, setFilter] = useState("all_patients");
+
+  const handleFilter = async (filter) => {
+    setFilter(filter);
+    let payload = {};
+
+    if (filter === "tumor_board") {
+      payload = {
+        added_to_tumor_board: true,
+      };
+    } else if (filter === "visits_today") {
+      const today = new Date();
+      const startOfToday = new Date(today.setHours(0, 0, 0, 0)).toISOString();
+      const endOfToday = new Date(today.setHours(23, 59, 59, 999)).toISOString();
+      payload = {
+        start_date: startOfToday,
+        end_date: endOfToday,
+      };
+    } else if (filter === "all_patients") {
+      payload = {};
+    } else {
+      payload = {
+        risk: filter,
+      };
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/patients/`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    setPatientData(data?.data);
+  };
+
+  console.log({ filter });
+
   return (
     <div className="w-80 bg-gray-900 border-r border-gray-700 flex flex-col">
-      {/* Search */}
-      {/* {router.pathname.includes("patients") && (
-        <div className="p-4 border-b border-gray-700">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search or filter patients"
-              className="w-full bg-gray-700 text-white placeholder-gray-400 rounded-lg px-4 py-2 pl-10"
-            />
-            <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-          </div>
-        </div>
-      )} */}
-
       {/* Stats */}
       <div className="p-2 border-b border-gray-700">
         <p className="text-md text-gray-200 py-2 font-medium">Quick filters</p>
@@ -46,20 +71,39 @@ export default function PatientSidebar({ patients, currentPatientId, setPatientD
           {filterOptions.map((option) => (
             <div
               key={option.id}
-              className="text-center border p-2 rounded-lg border-gray-700 hover:bg-teal-700 cursor-pointer transition-all duration-300"
+              className={classNames(
+                "text-center border p-2 rounded-lg border-gray-700 hover:bg-teal-700 cursor-pointer transition-all duration-300",
+                {
+                  "!bg-teal-700": filter === option.id,
+                  "bg-teal-700":
+                    option.id === "risk_lc" &&
+                    (filter === "Low" ||
+                      filter === "Moderate" ||
+                      filter === "High" ||
+                      filter === "Confirmed"),
+                }
+              )}
             >
-              <div className="text-sm text-gray-200">{option.label}</div>
+              {option.id !== "risk_lc" ? (
+                <div
+                  onClick={() => handleFilter(option.id)}
+                  className="text-sm text-gray-200"
+                >
+                  {option.label}
+                </div>
+              ) : (
+                <select
+                  onChange={(e) => handleFilter(e.target.value)}
+                  className="text-sm text-gray-200 outline-0 border-0"
+                >
+                  <option value="Low">Low</option>
+                  <option value="Moderate">Moderate</option>
+                  <option value="High">High</option>
+                  <option value="Confirmed">Confirmed</option>
+                </select>
+              )}
             </div>
           ))}
-          {/* <div className="text-center border p-2 rounded-lg border-gray-700 hover:bg-teal-700 cursor-pointer transition-all duration-300">
-            <div className="text-sm text-gray-200">Visits Today</div>
-          </div>
-          <div className="text-center border p-2 rounded-lg border-gray-700 hover:bg-teal-700 cursor-pointer transition-all duration-300">
-            <div className="text-sm text-gray-200">Risk LC</div>
-          </div>
-          <div className="text-center border p-2 rounded-lg border-gray-700 hover:bg-teal-700 cursor-pointer transition-all duration-300">
-            <div className="text-sm text-gray-200">Tumor Board</div>
-          </div> */}
         </div>
         <div className="mt-4">
           <div className="text-sm text-gray-400">{patients?.length} Patients</div>

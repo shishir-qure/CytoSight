@@ -24,6 +24,12 @@ export default function RiskTab({ riskAssessment }) {
       value: "High",
       color: "bg-red-500",
     },
+    {
+      id: 4,
+      name: "Confirmed",
+      value: "Confirmed",
+      color: "bg-purple-500",
+    },
   ];
   return (
     <div className="flex flex-col h-full">
