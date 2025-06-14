@@ -108,3 +108,16 @@ class Image(models.Model):
             models.Index(fields=['patient', 'image_id']),
             models.Index(fields=['patient', 'created_at']),
         ]
+
+class LLMOutputs(models.Model):
+    patient = models.ForeignKey(Patient, related_name="patient_llm_outputs", on_delete=models.CASCADE)
+    task_name = models.CharField(max_length=200, null=False, db_index=True)
+    llm_output = models.JSONField(null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, db_index=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    deleted_at = models.DateTimeField(null=True, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['patient', 'created_at']),
+        ]
