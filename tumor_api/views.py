@@ -8,8 +8,8 @@ from .serializers import PatientSerializer
 =======
 >>>>>>> d1a24c01253e89de025a294eb5cd8a0494d14d29
 from .services import get_patient_data
-from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit
-from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer
+from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport
+from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer, AIReportSerializer
 from django.http import FileResponse, Http404, HttpResponse
 import zipfile
 import io
@@ -179,3 +179,40 @@ class ImageSeriesDownloadView(APIView):
         response = HttpResponse(buffer, content_type='application/zip')
         response['Content-Disposition'] = f'attachment; filename="series_{pk}.zip"'
         return response
+
+
+class PatientAIReportView(APIView):
+    """
+    API view to get the AIReport for a patient.
+    Assumes only one ImageSeries exists per patient.
+    Returns 404 if no ImageSeries or AIReport exists.
+    """
+    def get(self, request, patient_id, format=None):
+        try:
+            # Get the patient
+            patient = Patient.objects.get(id=patient_id)
+        except Patient.DoesNotExist:
+            raise Http404("Patient not found")
+        
+        try:
+            # Get the ImageSeries for this patient (assuming only one exists)
+            image_series = patient.patient_image_series.get()
+        except ImageSeries.DoesNotExist:
+            raise Http404("No ImageSeries found for this patient")
+        except ImageSeries.MultipleObjectsReturned:
+            # If multiple exist, get the most recent one
+            image_series = patient.patient_image_series.order_by('-created_at').first()
+        
+        try:
+            # Get the AIReport for this ImageSeries
+            ai_report = image_series.ai_report
+        except AIReport.DoesNotExist:
+            raise Http404("No AIReport found for this patient's ImageSeries")
+        
+        # Serialize and return the AIReport
+        serializer = AIReportSerializer(ai_report)
+        return Response({
+            "status": "success",
+            "message": "AIReport retrieved successfully",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
