@@ -228,3 +228,72 @@ def get_visit_encounters(patient_id):
     )
 
     return response
+
+def get_structured_clinical_notes(patient_id):
+    patient_data = get_patient_data(patient_id)
+    system_prompt = """
+        You are a highly skilled clinical documentation assistant. Your task is to extract structured clinical notes from unstructured or raw medical text.
+
+        Return the output strictly as a valid JSON object, with no extra formatting, no markdown, and no commentary. Follow the structure and rules exactly.
+
+        Output format:
+        [
+            {
+            "title": "Short descriptive title",
+            "date": "YYYY-MM-DD or best available date string",
+            "content": "The full original note text",
+            "aiKeyPoints": [
+                "Summary point 1",
+                "Summary point 2",
+                "Summary point 3"
+            ],
+            "type": "Type of note (e.g., Progress Note, Radiology Report, Discharge Summary)"
+            }
+        ]
+
+        Field instructions:
+        - title: Short, meaningful title summarizing the note, like "Initial Oncology Consult" or "Radiology Report - CT Chest".
+        - date: Extract the date from the note in YYYY-MM-DD format. If unavailable, use "Unknown" or an approximate like "March 2023".
+        - content: Paste the full original note content.
+        - aiKeyPoints: Provide 2 to 5 bullet points summarizing key findings, decisions, or issues from the note.
+        - type: Select a relevant note type such as "Progress Note", "Consult Note", "Radiology Report", "Discharge Summary", etc.
+
+        Rules:
+        - If multiple notes are present in the input, return one object per note.
+        - Do not fabricate data. If a field is unclear or missing, use "Unknown".
+        - Only return raw JSON as described above. Do not include markdown, headings, explanations, or extra text of any kind.
+    """
+    user_prompt = f"""
+        Here is the patient's data:
+        {patient_data}
+    """
+    llm_service = LLMService()
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+    response = llm_service.get_response("gpt-3.5-turbo", messages)
+    try:
+        response = json.loads(response) if response else None
+    except json.JSONDecodeError:
+        print(f"Invalid JSON response from LLM: {response}")
+        response = None
+
+    # Mark any existing structured clinical notes as deleted
+    LLMOutputs.objects.filter(
+        patient_id=patient_id,
+        task_name="structured_clinical_notes",
+        is_deleted=False
+    ).update(
+        is_deleted=True,
+        deleted_at=timezone.now()
+    )
+
+    # Create new structured clinical notes
+    LLMOutputs.objects.create(
+        patient=Patient.objects.get(id=patient_id),
+        task_name="structured_clinical_notes",
+        llm_output=response
+    )
+
+    return response
