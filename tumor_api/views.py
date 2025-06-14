@@ -1,14 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-<<<<<<< HEAD
-from rest_framework import status
-from .models import Patient, Message
-from .serializers import PatientSerializer
-=======
->>>>>>> d1a24c01253e89de025a294eb5cd8a0494d14d29
-from .services import get_patient_data
-from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport
+from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport, Message
 from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer, AIReportSerializer
 from django.http import FileResponse, Http404, HttpResponse
 import zipfile
