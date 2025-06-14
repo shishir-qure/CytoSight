@@ -44,7 +44,7 @@ def get_risk_assessment(patient_id):
         {"role": "user", "content": user_prompt}
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
-    response = json.loads(response) if response else None
+    response = json.loads(response) if response and isinstance(response, str) else None
 
     # Mark any existing risk assessments as deleted
     LLMOutputs.objects.filter(
@@ -165,6 +165,8 @@ Please analyze the provided radiology report and return your findings in the fol
         }
     ]
 }
+
+make the label a small one, making it into acronyms etc.
 """
 
     user_prompt = f"""
@@ -187,12 +189,44 @@ Please analyze this report and extract key slice information according to the in
         {"role": "user", "content": user_prompt}
     ]
     
-    response = llm_service.get_response("gpt-4", messages)
+    response = llm_service.get_response("gpt-3.5-turbo", messages)
+    print(response)
+    
     
     if response:
         try:
             # Parse the JSON response
-            ai_analysis = json.loads(response)
+            ai_analysis = json.loads(response) if isinstance(response, str) else {}
+            
+            # Get all DICOM files from the image series, ordered by creation time
+            dicom_files = image_series.dicom_files.order_by('created_at')
+            print(dicom_files)
+            
+            # Create a list of file URLs indexed by position (assuming slice number corresponds to position)
+            file_urls = []
+            for dicom_file in dicom_files:
+                # Get the file URL - you may need to adjust this based on your URL structure
+                file_urls.append(dicom_file.file.url)
+            
+            # Populate file_links for each key slice
+            if isinstance(ai_analysis.get('keyslices_dict'), list):
+                for key_slice in ai_analysis['keyslices_dict']:
+                    if isinstance(key_slice, dict):
+                        start_slice = key_slice.get('start_slice', 0)
+                        end_slice = key_slice.get('end_slice', 0)
+                        
+                        # Convert slice numbers to 0-based indices (assuming 1-based slice numbers)
+                        start_idx = max(0, start_slice - 1) if start_slice > 0 else 0
+                        end_idx = min(len(file_urls) - 1, end_slice - 1) if end_slice > 0 else start_idx
+                        
+                        # Get the relevant file URLs for this slice range
+                        relevant_files = []
+                        if start_idx < len(file_urls):
+                            for i in range(start_idx, min(end_idx + 1, len(file_urls))):
+                                relevant_files.append(file_urls[i])
+                        
+                        # Populate the file_links for this key slice
+                        key_slice['file_links'] = relevant_files
             
             # Create the AIReport
             ai_report = AIReport.objects.create(
@@ -266,7 +300,7 @@ def get_diagnostic_tests(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
-        response = json.loads(response) if response else None
+        response = json.loads(response) if response and isinstance(response, str) else None
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None
@@ -321,7 +355,7 @@ def get_visit_encounters(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
-        response = json.loads(response) if response else None
+        response = json.loads(response) if response and isinstance(response, str) else None
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None
@@ -390,7 +424,7 @@ def get_structured_clinical_notes(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
-        response = json.loads(response) if response else None
+        response = json.loads(response) if response and isinstance(response, str) else None
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None

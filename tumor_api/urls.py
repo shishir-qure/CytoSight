@@ -5,12 +5,14 @@ from .views import (
     MediaUploadView, 
     MediaDownloadView,
     ImageSeriesUploadView,
-    ImageSeriesDownloadView
+    ImageSeriesDownloadView,
+    PatientAIReportView
 )
 
 urlpatterns = [
     path('patients/', PatientListView.as_view(), name='patient-list'),
     path('patients/<int:patient_id>/', PatientDetailView.as_view(), name='patient-detail'),
+    path('patients/<int:patient_id>/ai-report/', PatientAIReportView.as_view(), name='patient-ai-report'),
     path('media/upload/', MediaUploadView.as_view(), name='media-upload'),
     path('media/download/<int:pk>/', MediaDownloadView.as_view(), name='media-download'),
     path('series/upload/', ImageSeriesUploadView.as_view(), name='series-upload'),

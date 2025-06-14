@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Patient, Image, DicomFile, ImageSeries, DiagnosticReport, Visit
+from .models import Patient, Image, DicomFile, ImageSeries, DiagnosticReport, Visit, AIReport
 from .utils import DiagnosticReportStatus
 
 class PatientSerializer(serializers.ModelSerializer):
@@ -77,3 +77,9 @@ class ImageSeriesSerializer(serializers.ModelSerializer):
             DicomFile.objects.create(series=image_series, file=dicom_file_data)
         
         return image_series
+
+class AIReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AIReport
+        fields = ['id', 'scan_type', 'image_count', 'summary', 'keyslices_dict', 'created_at']
+        read_only_fields = ['id', 'created_at']
