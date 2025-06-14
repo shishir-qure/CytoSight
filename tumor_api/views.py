@@ -2,9 +2,12 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .services import get_patient_data
-from .models import Patient, Observation, DiagnosticReport, Immunization, Image
-from .serializers import PatientSerializer, MediaSerializer
-from django.http import FileResponse, Http404
+from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit
+from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer
+from django.http import FileResponse, Http404, HttpResponse
+import zipfile
+import io
+from tumor_api.llm_tasks import create_ai_report
 
 
 # Create your views here.
@@ -70,4 +73,38 @@ class MediaDownloadView(APIView):
 
         # Using FileResponse to stream the file.
         response = FileResponse(image_instance.file.open('rb'), as_attachment=True)
+        return response
+
+
+class ImageSeriesUploadView(generics.CreateAPIView):
+    """
+    API view to upload a new image series with multiple DICOM files (as PNGs).
+    """
+    queryset = ImageSeries.objects.all()
+    serializer_class = ImageSeriesSerializer
+
+
+class ImageSeriesDownloadView(APIView):
+    """
+    API view to download all images in a series as a single zip file.
+    """
+    def get(self, request, pk, format=None):
+        try:
+            image_series = ImageSeries.objects.get(pk=pk)
+        except ImageSeries.DoesNotExist:
+            raise Http404
+
+        # Create an in-memory zip file
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, 'w') as zf:
+            for dicom_file in image_series.dicom_files.all():
+                # Read file content and add to zip
+                file_content = dicom_file.file.read()
+                file_name = dicom_file.file.name.split('/')[-1]
+                zf.writestr(file_name, file_content)
+        
+        buffer.seek(0)
+        
+        response = HttpResponse(buffer, content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="series_{pk}.zip"'
         return response

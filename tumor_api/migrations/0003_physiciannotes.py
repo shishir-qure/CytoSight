@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tumor_api', '0002_actor_display_name_diagnosticreport_status_and_more'),
+        ('tumor_api', '0002_llmoutputs'),
     ]
 
     operations = [

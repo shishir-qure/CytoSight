@@ -127,10 +127,10 @@ def get_dicom_upload_path(instance, filename):
     return f'patient_{instance.series.patient.id}/series_{instance.series.id}/{filename}'
 
 class ImageSeries(models.Model):
-    patient = models.ForeignKey(Patient, related_name="image_series", on_delete=models.CASCADE)
-    visit = models.ForeignKey(Visit, related_name="image_series", on_delete=models.CASCADE, null=True, blank=True)
+    patient = models.ForeignKey(Patient, related_name="patient_image_series", on_delete=models.CASCADE)
+    visit = models.ForeignKey(Visit, related_name="visit_image_series", on_delete=models.CASCADE, null=True, blank=True)
     description = models.CharField(max_length=200, blank=True)
-    key_slices = models.JSONField(default=list, blank=True)
+    diagnostic_report = models.ForeignKey(DiagnosticReport, related_name="diagnostic_report_image_series", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
@@ -151,7 +151,7 @@ class Image(models.Model):
     # For general images and videos
     patient = models.ForeignKey(Patient, related_name="images", on_delete=models.CASCADE)
     visit = models.ForeignKey(Visit, related_name="images", on_delete=models.CASCADE, null=True, blank=True)
-    file = models.FileField(upload_to=get_general_media_upload_path, null=False)
+    file = models.FileField(upload_to=get_general_media_upload_path, null=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
 
@@ -169,4 +169,20 @@ class DicomFile(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['series', 'created_at']),
+        ]
+
+class AIReport(models.Model):
+    """
+    Stores the output of an AI analysis for a given ImageSeries.
+    """
+    image_series = models.OneToOneField(ImageSeries, related_name="ai_report", on_delete=models.CASCADE)
+    scan_type = models.CharField(max_length=50, db_index=True)
+    image_count = models.IntegerField()
+    summary = models.TextField(blank=True)
+    keyslices_dict = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['image_series']),
         ]
