@@ -188,7 +188,6 @@ Please analyze this report and extract key slice information according to the in
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt}
     ]
-<<<<<<< HEAD
     
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     print(response)
@@ -229,17 +228,6 @@ Please analyze this report and extract key slice information according to the in
                         # Populate the file_links for this key slice
                         key_slice['file_links'] = relevant_files
             
-=======
-
-
-    response = llm_service.get_response("gpt-4", messages)
-
-    if response:
-        try:
-            # Parse the JSON response
-            ai_analysis = json.loads(response)
-
->>>>>>> origin/main
             # Create the AIReport
             ai_report = AIReport.objects.create(
                 image_series=image_series,
@@ -272,10 +260,7 @@ Please analyze this report and extract key slice information according to the in
         )
         return ai_report
 
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/main
 def get_diagnostic_tests(patient_id):
     patient_data = get_patient_data(patient_id)
     system_prompt = """
@@ -370,11 +355,7 @@ def get_visit_encounters(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
-<<<<<<< HEAD
         response = json.loads(response) if response and isinstance(response, str) else None
-=======
-        response = json.loads(response) if response else None
->>>>>>> origin/main
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None
@@ -443,11 +424,7 @@ def get_structured_clinical_notes(patient_id):
     ]
     response = llm_service.get_response("gpt-3.5-turbo", messages)
     try:
-<<<<<<< HEAD
         response = json.loads(response) if response and isinstance(response, str) else None
-=======
-        response = json.loads(response) if response else None
->>>>>>> origin/main
     except json.JSONDecodeError:
         print(f"Invalid JSON response from LLM: {response}")
         response = None
