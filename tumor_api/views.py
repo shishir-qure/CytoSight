@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport, Message
+from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport, Message, LLMOutputs
 from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer, AIReportSerializer
 from django.http import FileResponse, Http404, HttpResponse
 from .services import get_patient_data
@@ -26,14 +26,12 @@ class PatientListView(APIView):
             filters['patient_visits__scheduled_at__range'] = [start_date, end_date]
 
         risk = request.data.get('risk')
-        print(risk)
         if risk:
             filters['patient_llm_outputs__task_name'] = 'risk_assessment'
             filters['patient_llm_outputs__llm_output__risk_level'] = risk
             filters['patient_llm_outputs__is_deleted'] = False
 
-        print(filters)
-        queryset = Patient.objects.filter(**filters)
+        queryset = Patient.objects.filter(**filters).order_by('-patient_visits__scheduled_at')
         serializer = PatientSerializer(queryset, many=True)
 
         response_data = {
@@ -187,7 +185,7 @@ class PatientAIReportView(APIView):
             patient = Patient.objects.get(id=patient_id)
         except Patient.DoesNotExist:
             raise Http404("Patient not found")
-        
+
         try:
             # Get the ImageSeries for this patient (assuming only one exists)
             image_series = patient.patient_image_series.get()
@@ -196,17 +194,52 @@ class PatientAIReportView(APIView):
         except ImageSeries.MultipleObjectsReturned:
             # If multiple exist, get the most recent one
             image_series = patient.patient_image_series.order_by('-created_at').first()
-        
+
         try:
             # Get the AIReport for this ImageSeries
             ai_report = image_series.ai_report
         except AIReport.DoesNotExist:
             raise Http404("No AIReport found for this patient's ImageSeries")
-        
+
         # Serialize and return the AIReport
         serializer = AIReportSerializer(ai_report)
         return Response({
             "status": "success",
             "message": "AIReport retrieved successfully",
             "data": serializer.data
+        }, status=status.HTTP_200_OK)
+
+class PhysicianNotesView(APIView):
+    def post(self, request, patient_id, *args, **kwargs):
+        try:
+            patient = Patient.objects.get(id=patient_id)
+        except Patient.DoesNotExist:
+            return Response({
+                "status": "error",
+                "message": "Patient not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        notes = request.data.get('notes')
+        if not notes:
+            return Response({
+                "status": "error",
+                "message": "Notes are required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create new physician notes
+
+        try:
+            structured_clinical_notes = LLMOutputs.objects.get(patient=patient, task_name="structured_clinical_notes", is_deleted=False)
+            structured_clinical_notes.llm_output.append(notes)
+            structured_clinical_notes.save()
+        except LLMOutputs.DoesNotExist:
+            LLMOutputs.objects.create(
+                patient=patient,
+                task_name="structured_clinical_notes",
+                llm_output=[notes]
+            )
+
+        return Response({
+            "status": "success",
+            "message": "Notes added successfully"
         }, status=status.HTTP_200_OK)

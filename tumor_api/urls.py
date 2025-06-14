@@ -8,7 +8,8 @@ from .views import (
     ImageSeriesDownloadView,
     PatientAIReportView,
     AddToTumorBoardView,
-    AddMessageView
+    AddMessageView,
+    PhysicianNotesView
 )
 
 urlpatterns = [
@@ -17,6 +18,7 @@ urlpatterns = [
     path('patients/<int:patient_id>/ai-report/', PatientAIReportView.as_view(), name='patient-ai-report'),
     path('patients/<int:patient_id>/add_to_tumor_board/', AddToTumorBoardView.as_view(), name='add-to-tumor-board'),
     path('patients/<int:patient_id>/messages/add/', AddMessageView.as_view(), name='add-message'),
+    path('patients/<int:patient_id>/notes/', PhysicianNotesView.as_view(), name='physician-notes'),
     path('media/upload/', MediaUploadView.as_view(), name='media-upload'),
     path('media/download/<int:pk>/', MediaDownloadView.as_view(), name='media-download'),
     path('series/upload/', ImageSeriesUploadView.as_view(), name='series-upload'),
