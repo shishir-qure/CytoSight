@@ -35,12 +35,26 @@ class PatientDetailView(APIView):
                 visit_observations = Observation.objects.filter(visit=visit, patient=patient)
                 visit_reports = DiagnosticReport.objects.filter(visit=visit, patient=patient)
                 visit_immunizations = Immunization.objects.filter(visit=visit, patient=patient)
-
                 visit_data.append({
-                    'visit': visit,
-                    'observations': visit_observations,
-                    'reports': visit_reports,
-                    'immunizations': visit_immunizations
+                    'id': visit.id,
+                    'scheduled_at': visit.scheduled_at,
+                    'created_at': visit.created_at,
+                    'actor_assigned': visit.actor_assigned.name,
+                    'observations': [{
+                        'id': obs.id,
+                        'focus': obs.focus,
+                        'created_at': obs.created_at
+                    } for obs in visit_observations],
+                    'reports': [{
+                        'id': report.id,
+                        'free_text_report': report.free_text_report,
+                        'created_at': report.created_at
+                    } for report in visit_reports],
+                    'immunizations': [{
+                        'id': imm.id,
+                        'vaccine': imm.vaccine,
+                        'created_at': imm.created_at
+                    } for imm in visit_immunizations]
                 })
 
             # Add related data to serializer context
