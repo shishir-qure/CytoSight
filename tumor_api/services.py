@@ -1,7 +1,7 @@
-from tumor_api.models import Patient, Observation, DiagnosticReport, Immunization, MedicationStatement, CarePlan, LLMOutputs
+from tumor_api.models import Patient, Observation, DiagnosticReport, Immunization, MedicationStatement, CarePlan, LLMOutputs, Message
 from tumor_api.serializers import PatientSerializer
 
-def get_patient_data(patient_id, include_llm_outputs=False):
+def get_patient_data(patient_id, include_llm_outputs=False, include_messages=False):
     patient = Patient.objects.get(id=patient_id)
     serializer = PatientSerializer(patient)
 
@@ -79,5 +79,15 @@ def get_patient_data(patient_id, include_llm_outputs=False):
         except LLMOutputs.DoesNotExist:
             pass
 
+    if include_messages:
+        try:
+            messages = Message.objects.filter(patient=patient).order_by('-created_at')
+            patient_data['messages'] = [{
+                'id': message.id,
+                'message': message.message,
+                'created_at': message.created_at,
+            } for message in messages]
+        except Message.DoesNotExist:
+            pass
 
     return patient_data
