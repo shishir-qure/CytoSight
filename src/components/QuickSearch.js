@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import RAGQuery from "../components/RAGQuery";
+
 import Toast from "./Toast";
 
 const QuickSearch = ({ currentPatient, setCurrentPatient }) => {
   const [loading, setLoading] = useState(true);
   const [molecularData, setMolecularData] = useState(null);
   const patient_uid = currentPatient?.patient?.id;
-
   useEffect(() => {
     const storedMolecularData = JSON.parse(localStorage.getItem("molecularData") ?? "[]");
     const patientMolecularData = storedMolecularData.find((data) => data[patient_uid]);
@@ -93,10 +94,13 @@ const QuickSearch = ({ currentPatient, setCurrentPatient }) => {
   };
 
   return (
-    <div className="flex-1 p-5">
+    <div className="flex-1 p-5 h-full">
       {/* <div className="flex items-center justify-between">
         <p className="text-2xl font-bold">Quick Search</p>
       </div> */}
+      <div className="max-h-full ">
+        <RAGQuery currentPatient={currentPatient}/>
+     </div>
 
       <div className="flex flex-col gap-4">
         <div>
