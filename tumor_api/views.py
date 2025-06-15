@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .models import Patient, Observation, DiagnosticReport, Immunization, Image, ImageSeries, Visit, AIReport, Message, LLMOutputs
 from .serializers import PatientSerializer, MediaSerializer, ImageSeriesSerializer, AIReportSerializer
 from django.http import FileResponse, Http404, HttpResponse
+from django.db.models import Max, Q
 from .services import get_patient_data
 import zipfile
 import io
@@ -33,7 +34,11 @@ class PatientListView(APIView):
             filters['patient_llm_outputs__llm_output__risk_level'] = risk
             filters['patient_llm_outputs__is_deleted'] = False
 
-        queryset = Patient.objects.filter(**filters).order_by('-patient_visits__scheduled_at')
+        # Annotate patients with their latest visit date and order by it
+        queryset = Patient.objects.filter(**filters).annotate(
+            latest_visit_date=Max('patient_visits__scheduled_at')
+        ).order_by('-latest_visit_date').distinct()
+        
         serializer = PatientSerializer(queryset, many=True)
 
         response_data = {
