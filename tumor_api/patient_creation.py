@@ -28,7 +28,7 @@ def generate_patient_data():
         {"role": "user", "content": user_prompt}
     ]
     
-    response = llm_service.get_response("openai/gpt-4.1-nano", messages)
+    response = llm_service.get_response("openai/gpt-4.1-mini", messages)
     
     try:
         # Parse the JSON response
@@ -249,7 +249,7 @@ def generate_lung_related_patient_data():
         {"role": "user", "content": user_prompt}
     ]
     
-    response = llm_service.get_response("openai/gpt-4.1-nano", messages)
+    response = llm_service.get_response("openai/gpt-4.1-mini", messages)
     
     try:
         # Parse the JSON response
@@ -471,7 +471,7 @@ def generate_lung_cancer_patient_data():
         {"role": "user", "content": user_prompt}
     ]
     
-    response = llm_service.get_response("openai/gpt-4.1-nano", messages)
+    response = llm_service.get_response("openai/gpt-4.1-mini", messages)
     
     try:
         # Parse the JSON response
