@@ -129,6 +129,7 @@ You must:
 - NOT modify or rephrase any existing notes.
 - NOT invent or infer information not explicitly present in the transcript.
 - ONLY add a new note if the transcript includes clear, factual, and new clinical content.
+- If the transcript does not mention a date, use the current date in the same format as existing notes.
 
 Format the output strictly as a raw JSON object using the structure:
 {
@@ -157,6 +158,7 @@ Return only a JSON object with keys: is_updated and existingNotes.`,
         ],
       }),
     });
+
     const data = await updatedNotes.json();
     const _notes = JSON.parse(data?.result)?.existingNotes;
     if (JSON.parse(data?.result)?.is_updated) {

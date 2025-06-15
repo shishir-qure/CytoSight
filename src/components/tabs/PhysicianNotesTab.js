@@ -6,7 +6,7 @@ export default function PhysicianNotesTab({ physicianNotes }) {
       <div className="p-6">
         <h2 className="text-2xl font-bold text-white mb-8">Physician Notes</h2>
 
-        <div className="space-y-8">
+        <div className="space-y-8 flex flex-col-reverse">
           {physicianNotes?.map((note, index) => (
             <div key={index} className="space-y-4">
               <div className="bg-gray-800 rounded-lg p-6">
