@@ -1,11 +1,21 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import RAGQuery from "../components/RAGQuery";
-const QuickSearch = ({ currentPatient }) => {
+
+import Toast from "./Toast";
+
+const QuickSearch = ({ currentPatient, setCurrentPatient }) => {
   const [loading, setLoading] = useState(true);
   const [molecularData, setMolecularData] = useState(null);
- 
+  const patient_uid = currentPatient?.patient?.id;
   useEffect(() => {
+    const storedMolecularData = JSON.parse(localStorage.getItem("molecularData") ?? "[]");
+    const patientMolecularData = storedMolecularData.find((data) => data[patient_uid]);
+    if (patientMolecularData) {
+      setMolecularData(patientMolecularData[patient_uid]);
+      setLoading(false);
+      return;
+    }
     const fetchMolecularData = async () => {
       setLoading(true);
       const molecularData = await fetch("/api/portkey", {
@@ -49,13 +59,40 @@ const QuickSearch = ({ currentPatient }) => {
         }),
       });
       const _molecularData = await molecularData.json();
-      setMolecularData(JSON.parse(_molecularData?.result ?? "{}"));
+      const finalMolecularData = JSON.parse(_molecularData?.result ?? "{}");
+      setMolecularData(finalMolecularData);
+      localStorage.setItem(
+        "molecularData",
+        JSON.stringify([{ [patient_uid]: finalMolecularData }, ...storedMolecularData])
+      );
       setLoading(false);
     };
     if (!!currentPatient) {
       fetchMolecularData();
     }
-  }, [currentPatient]);
+  }, [patient_uid]);
+
+  const handleSendMessage = async (text) => {
+    if (text.trim()) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/patients/${patient_uid}/messages/add/`,
+        {
+          method: "POST",
+          body: JSON.stringify({ message: text }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      await response.json();
+      setCurrentPatient({
+        ...currentPatient,
+        messages: [{ message: text }, ...currentPatient.messages],
+      });
+      Toast.success("Message sent to patient channel");
+    }
+  };
+
   return (
     <div className="flex-1 p-5 h-full">
       {/* <div className="flex items-center justify-between">
@@ -108,7 +145,10 @@ const QuickSearch = ({ currentPatient }) => {
                   </div>
                   <p className="text-gray-100 text-base">{data?.summary}</p>
                 </Link>
-                <button className="bg-teal-700 w-fit ml-auto hover:bg-teal-800 px-4 py-2 mt-4 rounded-lg text-sm cursor-pointer flex">
+                <button
+                  onClick={() => handleSendMessage(`${data?.nct_id} - ${data?.title}`)}
+                  className="bg-teal-700 w-fit ml-auto hover:bg-teal-800 px-4 py-2 mt-4 rounded-lg text-sm cursor-pointer flex"
+                >
                   Send to Patient Channel
                 </button>
               </div>
