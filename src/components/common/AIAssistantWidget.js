@@ -111,11 +111,77 @@ export default function AIAssistantWidget({ setCurrentPatient, currentPatient })
     }
   };
 
-  const handleGenerateNotes = () => {
-    // TODO: Send transcript to backend for notes generation
-    alert("Generate Physician&apos;s Notes for: " + transcript);
-  };
+  const handleGenerateNotes = async () => {
+    const existingNotes = currentPatient?.clinical_notes;
 
+    const updatedNotes = await fetch("/api/portkey", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: [
+          {
+            role: "system",
+            content: `You are a clinical assistant that manages structured clinical notes. Your task is to evaluate new medical transcripts and determine if they contain new, clinically relevant, non-redundant information suitable to be added as a new structured clinical note.
+
+You must:
+- NOT modify or rephrase any existing notes.
+- NOT invent or infer information not explicitly present in the transcript.
+- ONLY add a new note if the transcript includes clear, factual, and new clinical content.
+
+Format the output strictly as a raw JSON object using the structure:
+{
+  "is_updated": [true or false],
+  "existingNotes": [array of notes, including the new one if added]
+}
+
+CRITICAL INSTRUCTIONS:
+- Do NOT include any explanation or commentary.
+- Do NOT use Markdown formatting.
+- Do NOT wrap the output in triple backticks or \`\`\`json.
+- ONLY return valid JSON.`,
+          },
+          {
+            role: "user",
+            content: `Evaluate the following input:
+
+Existing Notes:
+${JSON.stringify(existingNotes, null, 2)}
+
+Transcript:
+${transcript}
+
+Return only a JSON object with keys: is_updated and existingNotes.`,
+          },
+        ],
+      }),
+    });
+    const data = await updatedNotes.json();
+    const _notes = JSON.parse(data?.result)?.existingNotes;
+    if (JSON.parse(data?.result)?.is_updated) {
+      const _res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/patients/${patient_uid}/notes/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ notes: _notes[_notes?.length - 1] }),
+        }
+      );
+      const _data = await _res.json();
+      if (_data?.status === "success") {
+        Toast.success("Notes added successfully");
+        setCurrentPatient({
+          ...currentPatient,
+          clinical_notes: _notes,
+        });
+      } else {
+        Toast.error("Failed to add notes");
+      }
+    }
+  };
   return (
     <>
       {/* Floating Button */}
@@ -180,12 +246,14 @@ export default function AIAssistantWidget({ setCurrentPatient, currentPatient })
                 <button
                   className="w-full py-2 rounded bg-teal-600 text-white mb-2 cursor-pointer"
                   onClick={handleSendToChannel}
+                  disabled={transcript.length === 0}
                 >
                   Send to Patient Channel
                 </button>
                 <button
                   className="w-full py-2 rounded bg-teal-600 text-white mb-2 cursor-pointer"
                   onClick={handleGenerateNotes}
+                  disabled={transcript.length === 0}
                 >
                   Generate Physician&apos;s Notes
                 </button>

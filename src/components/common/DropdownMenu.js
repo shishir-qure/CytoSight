@@ -19,7 +19,7 @@ export default function Example({ title, options }) {
             <MenuItem key={key}>
               <button
                 onClick={item.onClick}
-                className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 data-focus:bg-white/10"
+                className="group cursor-pointer flex w-full items-center gap-2 rounded-lg px-3 py-1.5 data-focus:bg-white/10"
               >
                 {item.title}
                 {item?.icon}

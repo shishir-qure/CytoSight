@@ -111,8 +111,8 @@ export default function PatientSidebar({ patients, currentPatientId, setPatientD
 
       {/* Patients List */}
       <div className="flex-1 overflow-y-auto">
-        {patients?.map((patient) => (
-          <Link key={patient.id} href={`/patients/${patient.id}`}>
+        {patients?.map((patient, index) => (
+          <Link key={index} href={`/patients/${patient.id}`}>
             <div
               className={`p-4 border-b border-gray-700 hover:bg-gray-700 cursor-pointer relative ${
                 currentPatientId == patient.id ? "bg-gray-700" : ""

@@ -17,23 +17,24 @@ export default function PatientPage() {
   const [currentPatient, setCurrentPatient] = useState(null);
   const [currentPatientVisit, setCurrentPatientVisit] = useState(null);
 
+  const fetchPatientData = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/patients/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setPatientData(data?.data);
+      // const first_patient = data?.data[0];
+      // router.push(`/patients/${patient_uid ?? first_patient?.id}`);
+    } catch (error) {
+      console.log("error-here", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:8000/api/patients/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        setPatientData(data?.data);
-        // const first_patient = data?.data[0];
-        // router.push(`/patients/${patient_uid ?? first_patient?.id}`);
-      } catch (error) {
-        console.log("error-here", error);
-      }
-    };
     fetchPatientData();
   }, []);
 
@@ -53,24 +54,50 @@ export default function PatientPage() {
     }
   }, [patient_uid]);
 
+  const handleAdd = async (type) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/patients/create-${type}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      if (data?.status === "success") {
+        fetchPatientData();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const addOptions = [
     {
       title: "Normal patient",
-      onClick: () => {},
+      onClick: () => {
+        handleAdd("normal");
+      },
     },
     {
       title: "Sick patient",
-      onClick: () => {},
+      onClick: () => {
+        handleAdd("lung-related");
+      },
     },
     {
       title: "Lung cancer patient",
-      onClick: () => {},
+      onClick: () => {
+        handleAdd("lung-cancer");
+      },
     },
-    {
-      title: `Run AI task for this patient`,
-      icon: <BsStars className="text-yellow-400" />,
-      onClick: () => {},
-    },
+    // {
+    //   title: `Run AI task for this patient`,
+    //   icon: <BsStars className="text-yellow-400" />,
+    //   onClick: () => {},
+    // },
   ];
 
   return (
