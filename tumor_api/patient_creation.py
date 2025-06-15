@@ -10,6 +10,65 @@ import json
 import uuid
 
 
+def _trigger_patient_llm_tasks(patient_id):
+    """
+    Trigger LLM task generation in a background thread for a newly created patient.
+    """
+    import threading
+    
+    def run_llm_tasks():
+        try:
+            from tumor_api.llm_tasks import (
+                get_risk_assessment, get_patient_summary, get_diagnostic_tests,
+                get_visit_encounters, get_structured_clinical_notes
+            )
+            
+            print(f"🚀 Starting LLM tasks for patient {patient_id}")
+            
+            # Run all LLM tasks
+            tasks = [
+                ("risk_assessment", get_risk_assessment),
+                ("patient_summary", get_patient_summary),
+                ("diagnostic_tests", get_diagnostic_tests),
+                ("visit_encounters", get_visit_encounters),
+                ("structured_clinical_notes", get_structured_clinical_notes)
+            ]
+            
+            completed_tasks = []
+            failed_tasks = []
+            
+            for task_name, task_function in tasks:
+                try:
+                    print(f"  📋 Running {task_name}...")
+                    result = task_function(patient_id)
+                    if result:
+                        completed_tasks.append(task_name)
+                        print(f"  ✅ {task_name} completed successfully")
+                    else:
+                        failed_tasks.append(task_name)
+                        print(f"  ⚠️ {task_name} returned empty result")
+                except Exception as e:
+                    failed_tasks.append(task_name)
+                    print(f"  ❌ {task_name} failed: {str(e)}")
+            
+            print(f"🎉 LLM tasks completed for patient {patient_id}")
+            print(f"  ✅ Successful: {completed_tasks}")
+            if failed_tasks:
+                print(f"  ❌ Failed: {failed_tasks}")
+                
+        except Exception as e:
+            print(f"❌ Error running LLM tasks for patient {patient_id}: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    # Start the LLM tasks in a background thread
+    thread = threading.Thread(target=run_llm_tasks)
+    thread.daemon = True  # Thread will die when main program exits
+    thread.start()
+    
+    print(f"🚀 LLM tasks started in background for patient {patient_id}")
+
+
 def generate_patient_data():
     """
     Generate patient data using LLM with the specified prompt
@@ -169,7 +228,7 @@ def populate_normal_patient_details(patient_data):
                         )
                 
                 # Create Medication Statements
-                if visit_info['medication']:
+                if visit_info.get('medication'):
                     medications = visit_info.get('medication', [])
                     if isinstance(medications, str):
                         medications = [medications]
@@ -211,6 +270,9 @@ def populate_normal_patient_details(patient_data):
                             visit=visit,
                             vaccine=immunization[:200]  # Limit to model field length
                         )
+            
+            # Trigger LLM tasks in background for this patient
+            _trigger_patient_llm_tasks(patient.pk)
             
             created_patients.append({
                 'patient_id': patient.pk,
@@ -432,6 +494,9 @@ def populate_lung_related_patient_details(patient_data):
                             visit=visit,
                             vaccine=immunization[:200]  # Limit to model field length
                         )
+            
+            # Trigger LLM tasks in background for this patient
+            _trigger_patient_llm_tasks(patient.pk)
             
             created_patients.append({
                 'patient_id': patient.pk,
@@ -697,6 +762,9 @@ def populate_lung_cancer_patient_details(patient_data):
                                     patient=patient,
                                     visit=first_visit
                                 )
+            
+            # Trigger LLM tasks in background for this patient
+            _trigger_patient_llm_tasks(patient.pk)
             
             created_patients.append({
                 'patient_id': patient.pk,
