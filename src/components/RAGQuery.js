@@ -45,7 +45,7 @@ export default function RAGQuery({ currentPatient }) {
     const [showResources, setShowResources] = useState(false);
     const [showAdditionalContext, setShowAdditionalContext] = useState(false);
     return (
-        <div className={` z-100  relative ${fullscreen ? "!h-[150px] mb-4 !max-h-[450px]" : "py-6  max-w-3xl mx-auto !max-h-[500px] "} 
+        <div className={` z-0  relative ${fullscreen ? "!h-[150px] mb-4 !max-h-[450px]" : "py-6  max-w-3xl mx-auto !max-h-[500px] "} 
         ${answer && "h-[500px] mb-4"}`}>
             <div
                 className={`transition-all overflow-y-auto duration-300 h-full ease-in-out bg-white dark:bg-gray-900 
