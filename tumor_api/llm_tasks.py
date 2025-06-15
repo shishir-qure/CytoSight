@@ -1,6 +1,7 @@
 from tumor_api.llm_service import LLMService
 from tumor_api.models import Patient, LLMOutputs, ImageSeries, AIReport, DiagnosticReport
 from tumor_api.services import get_patient_data
+from tumor_api.file_utils import get_external_file_urls, get_external_file_url
 from django.utils import timezone
 import json
 
@@ -202,11 +203,8 @@ Please analyze this report and extract key slice information according to the in
             dicom_files = image_series.dicom_files.order_by('created_at')
             print(dicom_files)
             
-            # Create a list of file URLs indexed by position (assuming slice number corresponds to position)
-            file_urls = []
-            for dicom_file in dicom_files:
-                # Get the file URL - you may need to adjust this based on your URL structure
-                file_urls.append(dicom_file.file.url)
+            # Create a list of external file URLs indexed by position
+            file_urls = get_external_file_urls(dicom_files)
             
             # Populate file_links for each key slice
             if isinstance(ai_analysis.get('keyslices_dict'), list):

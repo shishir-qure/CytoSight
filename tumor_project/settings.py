@@ -11,10 +11,16 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from config.env
+config_env_path = BASE_DIR / 'config.env'
+if config_env_path.exists():
+    load_dotenv(config_env_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -23,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-u%@-lx+w8f_1q9%!4@5fa44_*38wm4k3rust58j#2lr&m6f6p1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = []
 
@@ -131,6 +137,16 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Media files (user-uploaded files)
+# Media files configuration with environment variables
+MEDIA_ROOT_PATH = os.getenv('MEDIA_ROOT_PATH', './media')
+MEDIA_ROOT = BASE_DIR / MEDIA_ROOT_PATH.lstrip('./')
+
+# File server configuration
+FILE_SERVER_HOST = os.getenv('FILE_SERVER_HOST', 'http://localhost:3001')
+FILE_SERVER_PORT = os.getenv('FILE_SERVER_PORT', '3001')
+
+# Traditional Django media URL (still used for admin and development)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+# External file server URL for API responses
+EXTERNAL_MEDIA_URL = f"{FILE_SERVER_HOST}/"

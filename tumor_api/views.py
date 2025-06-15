@@ -8,6 +8,8 @@ from .services import get_patient_data
 import zipfile
 import io
 from tumor_api.llm_tasks import create_ai_report
+from tumor_api.patient_creation import generate_patient_data, populate_normal_patient_details, generate_lung_related_patient_data, populate_lung_related_patient_details, generate_lung_cancer_patient_data, populate_lung_cancer_patient_details
+from tumor_api.file_utils import get_file_server_info
 
 
 # Create your views here.
@@ -210,3 +212,176 @@ class PatientAIReportView(APIView):
             "message": "AIReport retrieved successfully",
             "data": serializer.data
         }, status=status.HTTP_200_OK)
+
+
+class NormalPatientCreationView(APIView):
+    """
+    API view to create normal patients with lung-related diseases using LLM generation.
+    """
+    def post(self, request, *args, **kwargs):
+        try:
+            # Generate patient data using LLM
+            patient_data = generate_patient_data()
+            print(patient_data)
+
+            
+            if not patient_data:
+                return Response({
+                    "status": "error",
+                    "message": "Failed to generate patient data from LLM"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            # Populate the database with generated data
+            result = populate_normal_patient_details(patient_data)
+            
+            if result.get('status') == 'error':
+                return Response({
+                    "status": "error",
+                    "message": result.get('message', 'Unknown error occurred')
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            return Response({
+                "status": "success",
+                "message": result.get('message', 'Patients created successfully'),
+                "data": {
+                    "patients_created": result.get('patients', []),
+                    "raw_llm_data": patient_data
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class LungRelatedPatientCreationView(APIView):
+    """
+    API view to create lung-related patients with specific lung diseases using LLM generation.
+    """
+    def post(self, request, *args, **kwargs):
+        try:
+            # Generate lung-related patient data using LLM
+            patient_data = generate_lung_related_patient_data()
+            print(patient_data)
+            
+            if not patient_data:
+                return Response({
+                    "status": "error",
+                    "message": "Failed to generate lung-related patient data from LLM"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            # Populate the database with generated data
+            result = populate_lung_related_patient_details(patient_data)
+            
+            if result.get('status') == 'error':
+                return Response({
+                    "status": "error",
+                    "message": result.get('message', 'Unknown error occurred')
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            return Response({
+                "status": "success",
+                "message": result.get('message', 'Lung-related patients created successfully'),
+                "data": {
+                    "patients_created": result.get('patients', []),
+                    "raw_llm_data": patient_data
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class LungCancerPatientCreationView(APIView):
+    """
+    API view to create comprehensive lung cancer patients across different phases of their cancer journey using LLM generation.
+    """
+    def post(self, request, *args, **kwargs):
+        try:
+            # Generate lung cancer patient data using LLM
+            patient_data = generate_lung_cancer_patient_data()
+            print(patient_data)
+            
+            if not patient_data:
+                return Response({
+                    "status": "error",
+                    "message": "Failed to generate lung cancer patient data from LLM"
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            # Populate the database with generated data
+            result = populate_lung_cancer_patient_details(patient_data)
+            
+            if result.get('status') == 'error':
+                return Response({
+                    "status": "error",
+                    "message": result.get('message', 'Unknown error occurred')
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            return Response({
+                "status": "success",
+                "message": result.get('message', 'Lung cancer patients created successfully'),
+                "data": {
+                    "patients_created": result.get('patients', []),
+                    "raw_llm_data": patient_data
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class FileServerInfoView(APIView):
+    """
+    API view to get file server configuration and status information.
+    """
+    def get(self, request, *args, **kwargs):
+        try:
+            file_server_info = get_file_server_info()
+            
+            # Check if the file server is accessible
+            import requests
+            import os
+            
+            file_server_status = "unknown"
+            try:
+                response = requests.get(f"{file_server_info['host']}/", timeout=5)
+                if response.status_code == 200:
+                    file_server_status = "running"
+                else:
+                    file_server_status = "error"
+            except requests.exceptions.RequestException:
+                file_server_status = "not_running"
+            
+            # Check if media directory exists
+            media_dir_exists = os.path.exists(file_server_info['media_root'])
+            
+            return Response({
+                "status": "success",
+                "message": "File server information retrieved successfully",
+                "data": {
+                    "file_server": {
+                        **file_server_info,
+                        "status": file_server_status,
+                        "media_directory_exists": media_dir_exists
+                    },
+                    "instructions": {
+                        "start_server": "Run: ./start_file_server.sh",
+                        "install_serve": "Run: npm install -g serve",
+                        "check_config": "Edit: tumor_project/config.env"
+                    }
+                }
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
