@@ -3,10 +3,27 @@ from .models import Patient, Image, DicomFile, ImageSeries, DiagnosticReport, Vi
 from .utils import DiagnosticReportStatus
 from .file_utils import get_external_file_url
 
+class VisitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visit
+        fields = ['id', 'scheduled_at']
+        read_only_fields = ['id', 'created_at']
+
 class PatientSerializer(serializers.ModelSerializer):
+    # Include visit dates in patient serialization
+    patient_visits = VisitSerializer(many=True, read_only=True)
+    latest_visit_date = serializers.SerializerMethodField()
+
     class Meta:
         model = Patient
         fields = '__all__'
+
+    def get_latest_visit_date(self, obj):
+        """Get the most recent visit date for this patient"""
+        latest_visit = obj.patient_visits.order_by('-scheduled_at').first()
+        if latest_visit:
+            return latest_visit.scheduled_at
+        return None
 
 class MediaSerializer(serializers.ModelSerializer):
     external_file_url = serializers.SerializerMethodField()
@@ -100,7 +117,7 @@ class ImageSeriesSerializer(serializers.ModelSerializer):
         # Create DICOM files
         for dicom_file_data in dicom_files_data:
             DicomFile.objects.create(series=image_series, file=dicom_file_data)
-        
+
         return image_series
 
 class AIReportSerializer(serializers.ModelSerializer):
