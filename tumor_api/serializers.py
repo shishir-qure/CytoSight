@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Patient, Image, DicomFile, ImageSeries, DiagnosticReport, Visit, Message, AIReport
 from .utils import DiagnosticReportStatus
+from .file_utils import get_external_file_url
 
 class VisitSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,10 +26,16 @@ class PatientSerializer(serializers.ModelSerializer):
         return None
 
 class MediaSerializer(serializers.ModelSerializer):
+    external_file_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = Image
-        fields = ['id', 'patient', 'visit', 'file', 'created_at']
-        read_only_fields = ['id', 'created_at']
+        fields = ['id', 'patient', 'visit', 'file', 'external_file_url', 'created_at']
+        read_only_fields = ['id', 'created_at', 'external_file_url']
+    
+    def get_external_file_url(self, obj):
+        """Get external file server URL for the uploaded file"""
+        return get_external_file_url(obj.file)
 
 class DicomFileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +47,7 @@ class ImageSeriesSerializer(serializers.ModelSerializer):
         child=serializers.FileField(),
         write_only=True
     )
+    dicom_file_urls = serializers.SerializerMethodField()
     diagnostic_report_text = serializers.CharField(
         max_length=400,
         required=False,
@@ -59,9 +67,26 @@ class ImageSeriesSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'patient', 'visit', 'description',
             'diagnostic_report', 'created_at', 'dicom_files',
-            'diagnostic_report_text', 'diagnostic_report_status'
+            'dicom_file_urls', 'diagnostic_report_text', 'diagnostic_report_status'
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'created_at', 'dicom_file_urls']
+    
+    def get_dicom_file_urls(self, obj):
+        """Get external file server URLs for all DICOM files in the series"""
+        if hasattr(obj, 'dicom_files'):
+            dicom_files = obj.dicom_files.all()
+            urls = []
+            for dicom_file in dicom_files:
+                url = get_external_file_url(dicom_file.file)
+                if url:
+                    urls.append({
+                        'id': dicom_file.id,
+                        'url': url,
+                        'filename': dicom_file.file.name.split('/')[-1] if dicom_file.file.name else '',
+                        'created_at': dicom_file.created_at
+                    })
+            return urls
+        return []
 
     def create(self, validated_data):
         dicom_files_data = validated_data.pop('dicom_files')
