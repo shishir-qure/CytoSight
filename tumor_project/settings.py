@@ -44,13 +44,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'tumor_api'
+    'tumor_api',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -66,6 +68,9 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = 'tumor_project.urls'
+ALLOWED_HOSTS = ["*"]
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [
     {
@@ -148,5 +153,7 @@ FILE_SERVER_PORT = os.getenv('FILE_SERVER_PORT', '3001')
 # Traditional Django media URL (still used for admin and development)
 MEDIA_URL = '/media/'
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 # External file server URL for API responses
 EXTERNAL_MEDIA_URL = f"{FILE_SERVER_HOST}/"

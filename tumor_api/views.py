@@ -144,9 +144,52 @@ class MediaDownloadView(APIView):
 class ImageSeriesUploadView(generics.CreateAPIView):
     """
     API view to upload a new image series with multiple DICOM files (as PNGs).
+    Automatically triggers AI report generation after successful upload.
     """
     queryset = ImageSeries.objects.all()
     serializer_class = ImageSeriesSerializer
+
+    def perform_create(self, serializer):
+        """Override to trigger AI report creation after successful upload."""
+        # Create the ImageSeries instance
+        image_series = serializer.save()
+        
+        # Trigger AI report creation asynchronously
+        self._trigger_ai_report_creation(image_series)
+    
+    def _trigger_ai_report_creation(self, image_series):
+        """
+        Trigger AI report creation in a background thread to avoid blocking the HTTP response.
+        """
+        import threading
+        
+        def create_report():
+            try:
+                print(f"Starting AI report creation for ImageSeries {image_series.id}")
+                
+                # Get the patient and visit
+                patient = image_series.patient
+                visit = image_series.visit
+                
+                # Call the existing create_ai_report function
+                ai_report = create_ai_report(patient, visit, image_series)
+                
+                if ai_report:
+                    print(f"✅ AI report created successfully with ID: {ai_report.id}")
+                else:
+                    print("❌ Failed to create AI report")
+                    
+            except Exception as e:
+                print(f"❌ Error creating AI report: {str(e)}")
+                import traceback
+                traceback.print_exc()
+        
+        # Start the AI report creation in a background thread
+        thread = threading.Thread(target=create_report)
+        thread.daemon = True  # Thread will die when main program exits
+        thread.start()
+        
+        print(f"🚀 AI report creation started in background for ImageSeries {image_series.id}")
 
 
 class ImageSeriesDownloadView(APIView):
