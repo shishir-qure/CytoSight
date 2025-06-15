@@ -15,7 +15,7 @@ export default function Example({ title, options }) {
           anchor="bottom end"
           className="w-fit origin-top-right rounded-xl border border-white/5 bg-teal-800 p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
         >
-          {options.map((item, key) => (
+          {options?.map((item, key) => (
             <MenuItem key={key}>
               <button
                 onClick={item.onClick}

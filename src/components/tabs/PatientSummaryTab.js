@@ -18,7 +18,7 @@ export default function PatientSummaryTab({ summary }) {
       <h2 className="text-2xl font-bold text-white mb-8">Patient Summary</h2>
 
       <div className="space-y-8">
-        <p className="text-gray-300 text-lg">{summary}</p>
+        {!!summary && <p className="text-gray-300 text-lg">{summary}</p>}
         {/* Demographics */}
         {/* <div className="bg-gray-800 rounded-lg p-6">
           <h3 className="text-xl font-semibold text-white mb-6">Demographics</h3>

@@ -1,49 +1,44 @@
-import { format } from "date-fns";
 export default function VitalsTab({ vitals }) {
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-6">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold text-white">Vital Signs</h2>
-          <div className="flex space-x-3">
-            {/* <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-              <span>📋</span>
-              <span>Send to EMR</span>
-            </button> */}
-          </div>
+          <div className="flex space-x-3"></div>
         </div>
 
         <div className="space-y-4">
-          {vitals?.map((vital, index) => (
-            <div key={index} className="bg-gray-800 rounded-lg p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold uppercase text-white mb-1 flex items-center">
-                    {vital.focus?.split(":")[0]}
-                  </h3>
-                  {/* <p className="text-gray-400 text-sm">
+          {vitals?.length > 0 &&
+            vitals?.map((vital, index) => (
+              <div key={index} className="bg-gray-800 rounded-lg p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold uppercase text-white mb-1 flex items-center">
+                      {vital?.focus?.split(":")[0]}
+                    </h3>
+                    {/* <p className="text-gray-400 text-sm">
                     Last updated:{" "}
                     {format(
                       new Date(vitalsData?.scheduled_at?.split("T")[0]),
                       "MMM d, yyyy"
                     )}
                   </p> */}
+                  </div>
+                  <div
+                    className={`text-2xl font-bold ${
+                      vital?.status === "elevated"
+                        ? "text-yellow-400"
+                        : vital.status === "critical"
+                        ? "text-red-400"
+                        : "text-gray-100"
+                    }`}
+                  >
+                    {vital?.focus?.split(":")[1]}
+                  </div>
                 </div>
-                <div
-                  className={`text-2xl font-bold ${
-                    vital?.status === "elevated"
-                      ? "text-yellow-400"
-                      : vital.status === "critical"
-                      ? "text-red-400"
-                      : "text-gray-100"
-                  }`}
-                >
-                  {vital.focus?.split(":")[1]}
-                </div>
-              </div>
 
-              {/* Trend History */}
-              {/* <div className="mt-4">
+                {/* Trend History */}
+                {/* <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-300 mb-2">
                   Recent History:
                 </h4>
@@ -58,8 +53,8 @@ export default function VitalsTab({ vitals }) {
                   ))}
                 </div>
               </div> */}
-            </div>
-          ))}
+              </div>
+            ))}
         </div>
 
         {/* Additional Monitoring Section */}

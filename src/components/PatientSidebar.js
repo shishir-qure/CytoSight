@@ -66,7 +66,7 @@ export default function PatientSidebar({ patients, currentPatientId, setPatientD
       <div className="p-2 border-b border-gray-700">
         <p className="text-md text-gray-200 py-2 font-medium">Quick filters</p>
         <div className="grid grid-cols-2 gap-2">
-          {filterOptions.map((option) => (
+          {filterOptions?.map((option) => (
             <div
               key={option.id}
               className={classNames(

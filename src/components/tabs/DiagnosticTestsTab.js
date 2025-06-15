@@ -7,7 +7,7 @@ export default function DiagnosticTestsTab({ diagnosticTests }) {
         <h2 className="text-2xl font-bold text-white mb-8">Diagnostic Tests</h2>
 
         <div className="space-y-6">
-          {diagnosticTests.map((test, index) => (
+          {diagnosticTests?.map((test, index) => (
             <div key={index} className="bg-gray-800 rounded-lg p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
@@ -85,7 +85,7 @@ export default function DiagnosticTestsTab({ diagnosticTests }) {
                     <span className="text-gray-300 font-semibold">AI Key Findings:</span>
                   </div>
                   <ul className="space-y-2">
-                    {test?.aiFindings.map((finding, findingIndex) => (
+                    {test?.aiFindings?.map((finding, findingIndex) => (
                       <li key={findingIndex} className="text-gray-100 text-sm">
                         • {finding}
                       </li>
@@ -94,14 +94,14 @@ export default function DiagnosticTestsTab({ diagnosticTests }) {
                 </div>
               )}
 
-              {test.aiAnalysis && (
+              {test?.aiAnalysis && (
                 <div className="bg-yellow-900 rounded-lg p-4">
                   <div className="flex items-center mb-3">
                     <span className="mr-2">🤖</span>
                     <span className="text-yellow-300 font-semibold">AI Analysis:</span>
                   </div>
                   <ul className="space-y-2">
-                    {test.aiAnalysis.map((analysis, analysisIndex) => (
+                    {test?.aiAnalysis?.map((analysis, analysisIndex) => (
                       <li key={analysisIndex} className="text-yellow-200 text-sm">
                         • {analysis}
                       </li>

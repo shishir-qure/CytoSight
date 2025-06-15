@@ -1,7 +1,6 @@
 "use client";
 
 import classNames from "classnames";
-import { useState } from "react";
 import { BsExclamationTriangle, BsStars } from "react-icons/bs";
 import { FaShieldAlt } from "react-icons/fa";
 
@@ -41,17 +40,18 @@ export default function RiskTab({ riskAssessment }) {
           <div className="space-y-3">
             <h2 className="text-2xl font-bold text-white mb-8">Lung Cancer Risk</h2>
             <div className="flex items-center gap-2">
-              {tags.map((tag) => (
-                <div
-                  key={tag.id}
-                  className={classNames(`p-1 rounded-full w-28 text-center`, {
-                    [`${tag.color}`]: tag.value === riskAssessment?.risk_level,
-                    "border border-gray-600": tag.value !== riskAssessment?.risk_level,
-                  })}
-                >
-                  {tag.name}
-                </div>
-              ))}
+              {tags?.length > 0 &&
+                tags?.map((tag) => (
+                  <div
+                    key={tag?.id}
+                    className={classNames(`p-1 rounded-full w-28 text-center`, {
+                      [`${tag?.color}`]: tag?.value === riskAssessment?.risk_level,
+                      "border border-gray-600": tag?.value !== riskAssessment?.risk_level,
+                    })}
+                  >
+                    {tag?.name}
+                  </div>
+                ))}
             </div>
           </div>
 

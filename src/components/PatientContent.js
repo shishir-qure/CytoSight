@@ -102,7 +102,7 @@ export default function PatientContent({
       {/* Tabs */}
       <div className="border-b border-gray-700 bg-gray-800">
         <div className="flex">
-          {tabs.map((tab) => (
+          {tabs?.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}

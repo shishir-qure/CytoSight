@@ -2,10 +2,8 @@ import React, { useState } from "react";
 
 import PngStackViewer from "./PngStackViewer";
 
-const ReportItem = ({ report,keySlices}) => {
- 
+const ReportItem = ({ report, keySlices }) => {
   const [selectedSlice, setSelectedSlice] = useState(null);
-
 
   const handleSliceClick = (slice) => {
     setSelectedSlice(slice);
@@ -18,21 +16,20 @@ const ReportItem = ({ report,keySlices}) => {
   return (
     <div className="w-full dark:bg-gray-700 rounded-lg shadow hover:shadow-md transition-shadow">
       <div className="flex flex-col gap-4">
-      
-        {keySlices.length > 0 && (
+        {keySlices?.length > 0 && (
           <div className="mt-4">
             {/* <h4 className="text-md font-semibold mb-2">Findings</h4> */}
             <div className="grid grid-cols-2 gap-4">
-              {keySlices.map((slice) => (
+              {keySlices?.map((slice) => (
                 <div
-                  key={slice.label}
+                  key={slice?.label}
                   className="bg-gray-50 dark:bg-gray-600 p-3 rounded"
                 >
                   <div
                     className="font-medium text-gray-700 dark:text-gray-200  cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                     onClick={() => handleSliceClick(slice)}
                   >
-                    {slice.label}
+                    {slice?.label}
                   </div>
                 </div>
               ))}
@@ -81,7 +78,10 @@ const ReportItem = ({ report,keySlices}) => {
                   Scans
                 </h4>
                 <div className="">
-                  <div key={selectedSlice} className="relative w-full flex justify-center items-center text-xl">
+                  <div
+                    key={selectedSlice}
+                    className="relative w-full flex justify-center items-center text-xl"
+                  >
                     <PngStackViewer
                       images={selectedSlice.file_links}
                       firstSlice={selectedSlice.start_slice}
